@@ -4,7 +4,7 @@ use anyhow::{Ok, Result};
 use axum::{
     Router,
     http::{
-        Method,
+        Method, StatusCode,
         header::{AUTHORIZATION, CONTENT_TYPE},
     },
 };
@@ -12,6 +12,7 @@ use tokio::net::TcpListener;
 use tower_http::{
     cors::{Any, CorsLayer},
     limit::RequestBodyLimitLayer,
+    services::{ServeDir, ServeFile},
     timeout::TimeoutLayer,
     trace::TraceLayer,
 };
@@ -22,9 +23,23 @@ use crate::{
     infrastructure::{database::postgresql_connection::PgPoolSquad, http::routers::default_router},
 };
 
+fn static_serve() -> Router {
+    let dir = "statics";
+
+    let service = ServeDir::new(dir).not_found_service(ServeFile::new(format!("{dir}/index.html")));
+
+    Router::new().fallback_service(service)
+}
+
+fn api_serve() -> Router {
+    Router::new().fallback(|| async { (StatusCode::NOT_FOUND, "API not found") })
+}
+
 pub async fn start(config: Arc<DotEnvyConfig>, db_pool: Arc<PgPoolSquad>) -> Result<()> {
     let app = Router::new()
-        .fallback(default_router::health_check)
+        .merge(static_serve())
+        .nest("/api", api_serve())
+        // .fallback(default_router::health_check)
         // .route("/health_check", get(default_router::health_check)
         .layer(TimeoutLayer::new(Duration::from_secs(
             config.server.timeout,
