@@ -20,7 +20,7 @@ use tracing::info;
 
 use crate::{
     config::config_model::DotEnvyConfig,
-    infrastructure::{database::postgresql_connection::PgPoolSquad, http::routers::default_router},
+    infrastructure::database::postgresql_connection::PgPoolSquad,
 };
 
 fn static_serve() -> Router {
