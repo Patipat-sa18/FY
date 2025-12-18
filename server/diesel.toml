@@ -6,4 +6,4 @@ file = "src/infrastructure/database/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
-dir = "/home/xkalux/_CS/LeagueOfLegends/server/src/infrastructure/database/migrations"
+dir = "/home/xkalux/LeagueOfLegends/server/src/infrastructure/database/migrations"

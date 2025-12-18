@@ -5,6 +5,8 @@
         "Insertable",
         "jsonwebtoken",
         "leavable",
+        "menta",
+        "repositiory",
         "serv",
         "VARCHAR"
     ]
