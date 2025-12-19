@@ -34,6 +34,10 @@ fn api_serve(db_pool: Arc<PgPoolSquad>) -> Router {
     Router::new()
         .nest("/brawler", routers::brawlers::routes(Arc::clone(&db_pool)))
         .nest(
+            "/crew",
+            routers::crew_operation::routes(Arc::clone(&db_pool)),
+        )
+        .nest(
             "/mission-management",
             routers::mission_management::routes(Arc::clone(&db_pool)),
         )

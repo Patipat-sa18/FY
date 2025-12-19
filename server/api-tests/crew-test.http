@@ -1,0 +1,12 @@
+### join mission
+# @prompt mission_id Mission ID to Join
+POST  {{base_url}}/crew/join/{{mission_id}}
+Content-Type: application/json
+Authorization: Bearer {{menta_token}}
+
+
+### leave mission
+# @prompt mission_id Mission ID to Leave
+DELETE  {{base_url}}/crew/leave/{{mission_id}}
+Content-Type: application/json
+Authorization: Bearer {{menta_token}}
