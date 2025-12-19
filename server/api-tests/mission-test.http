@@ -1,4 +1,34 @@
-//Todo: implement test
+### create new mission
+# @prompt mission_name Mission Name
+# @prompt description Mission Description
+POST {{base_url}}/mission-management
+Content-Type: application/json
+Authorization: Bearer {{menta_token}}
 
-//  api/mission/...
-// next : slide 51
+
+{
+    "name": "{{mission_name}}",
+    "description":"{{description}}"
+}
+
+
+### update mission
+# @prompt mission_id Mission ID
+# @prompt mission_name Mission Name
+# @prompt description Mission Description
+PATCH {{base_url}}/mission-management/{{mission_id}}
+Content-Type: application/json
+Authorization: Bearer {{menta_token}}
+
+
+{
+    "name": "{{mission_name}}",
+    "description": "{{description}}"
+}
+
+
+### remove mission
+# @prompt mission_id Mission ID
+DELETE {{base_url}}/mission-management/{{mission_id}}
+Content-Type: application/json
+Authorization: Bearer {{menta_token}}

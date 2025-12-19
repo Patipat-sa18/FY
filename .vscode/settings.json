@@ -9,5 +9,12 @@
         "repositiory",
         "serv",
         "VARCHAR"
-    ]
+    ],
+    "rest-client.environmentVariables": {
+        "$shared": {},
+        "dev": {
+            "base_url": "http://127.0.0.1:8000/api",
+            "menta_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzY2MzY5NzA0LCJpYXQiOjE3NjYxMTA1MDR9.m9RGzv-YmbYdlnCvGY5Z61OYCH15m7942N0A7kbKrkY"
+        }
+    }
 }
