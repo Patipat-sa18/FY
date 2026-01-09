@@ -33,6 +33,20 @@ where
     }
 }
 
+pub async fn get_crew<T>(
+    State(user_case): State<Arc<MissionViewingUseCase<T>>>,
+    Path(mission_id): Path<i32>,
+) -> impl IntoResponse
+where
+    T: MissionViewingRepository + Send + Sync,
+{
+    match user_case.get_crew(mission_id).await {
+        Ok(model) => (StatusCode::OK, Json(model)).into_response(),
+
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+    }
+}
+
 pub async fn get_all<T>(
     State(user_case): State<Arc<MissionViewingUseCase<T>>>,
     filter: Query<MissionFilter>,
@@ -54,6 +68,7 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     Router::new()
         .route("/{mission_id}", get(get_one))
         .route("/filter", get(get_all))
+        .route("/crew/{mission_id}", get(get_crew))
         // .route_layer(middleware::from_fn(auth))
         .with_state(Arc::new(user_case))
 }

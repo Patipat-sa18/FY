@@ -14,7 +14,7 @@ where
     T2: MissionViewingRepository + Send + Sync,
 {
     mission_operation_repository: Arc<T1>,
-    missiom_viewing_repository: Arc<T2>,
+    mission_viewing_repository: Arc<T2>,
 }
 
 impl<T1, T2> MissionOperationUseCase<T1, T2>
@@ -22,18 +22,18 @@ where
     T1: MissionOperationRepository + Send + Sync,
     T2: MissionViewingRepository + Send + Sync,
 {
-    pub fn new(mission_operation_repository: Arc<T1>, missiom_viewing_repository: Arc<T2>) -> Self {
+    pub fn new(mission_operation_repository: Arc<T1>, mission_viewing_repository: Arc<T2>) -> Self {
         Self {
             mission_operation_repository,
-            missiom_viewing_repository,
+            mission_viewing_repository,
         }
     }
 
     pub async fn in_progress(&self, mission_id: i32, chief_id: i32) -> Result<i32> {
-        let mission = self.missiom_viewing_repository.get_one(mission_id).await?;
+        let mission = self.mission_viewing_repository.get_one(mission_id).await?;
 
         let crew_count = self
-            .missiom_viewing_repository
+            .mission_viewing_repository
             .crew_counting(mission_id)
             .await?;
 
@@ -59,7 +59,7 @@ where
         Ok(result)
     }
     pub async fn to_completed(&self, mission_id: i32, chief_id: i32) -> Result<i32> {
-        let mission = self.missiom_viewing_repository.get_one(mission_id).await?;
+        let mission = self.mission_viewing_repository.get_one(mission_id).await?;
 
         let update_condition = mission.status == MissionStatuses::InProgress.to_string()
             && mission.chief_id == chief_id;
@@ -74,7 +74,7 @@ where
         Ok(result)
     }
     pub async fn to_failed(&self, mission_id: i32, chief_id: i32) -> Result<i32> {
-        let mission = self.missiom_viewing_repository.get_one(mission_id).await?;
+        let mission = self.mission_viewing_repository.get_one(mission_id).await?;
 
         let update_condition = mission.status == MissionStatuses::InProgress.to_string()
             && mission.chief_id == chief_id;

@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, serde::Deserialize)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UploadedImg {
     pub url: String,
     pub public_id: String,
@@ -10,6 +12,7 @@ impl UploadedImg {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UploadBase64Img {
     pub base64_string: String,
 }
