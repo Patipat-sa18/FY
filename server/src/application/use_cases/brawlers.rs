@@ -35,9 +35,8 @@ where
 
         let register_entity = register_brawler_model.to_entity();
 
-        let id = self.brawler_repository.register(register_entity).await?;
+        let passport = self.brawler_repository.register(register_entity).await?;
 
-        let passport = Passport::new(id)?;
         Ok(passport)
     }
 

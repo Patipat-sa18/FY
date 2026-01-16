@@ -1,3 +1,4 @@
 export const environment = {
-    baseUrl: ''
+    baseUrl: '',
+    xxx: 'xx'
 }

@@ -5,6 +5,7 @@
         "Insertable",
         "jsonwebtoken",
         "leavable",
+        "maxlength",
         "menta",
         "repositiory",
         "reqwest",

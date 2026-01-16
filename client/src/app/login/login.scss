@@ -1,0 +1,103 @@
+.login-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h3 {
+        margin: 0;
+        padding: 0;
+        margin-bottom: 1em;
+    }
+
+    .error {
+        color: #bb303b;
+        font-size: small;
+        text-align: center;
+        margin-top: 0.2em;
+    }
+
+    mat-card {
+        margin-top: 2em;
+        padding: 2em;
+    }
+
+    div.login-spacer,
+    form {
+        width: 300px;
+        min-width: 200px;
+        max-width: 400px;
+    }
+
+    mat-form-field {
+        /* border: 1px solid green; */
+        height: 50px;
+        margin-bottom: 1.2em;
+        display: block;
+    }
+
+    button.blue {
+        font-size: large;
+        width: 100%;
+        background-color: #3448c5;
+        color: rgb(241, 250, 250);
+    }
+
+    button.blue:disabled {
+        background-color: #a1a9d6;
+        color: #d4d9e9;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .toggle {
+        color: #a2abb4;
+        width: 100%;
+        text-align: center;
+        font-size: small;
+    }
+
+    .toggle span {
+        color: #3448c5;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+
+    div.login-spacer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        line-height: 1.375rem;
+        color: #a2abb4;
+        font-family: 300;
+        margin-top: 1em;
+        margin-bottom: 1em;
+
+
+        /* border: 1px solid green; */
+    }
+
+
+    div.login-spacer::after {
+        margin-left: 12px;
+        border-bottom: 1px solid #a2abb4;
+    }
+
+
+    div.login-spacer::before {
+        margin-right: 12px;
+        border-bottom: 1px solid #a2abb4;
+    }
+
+
+    *::before,
+    *::after {
+        flex-grow: 1;
+        height: 1px;
+        content: "";
+        box-sizing: border-box;
+    }
+}

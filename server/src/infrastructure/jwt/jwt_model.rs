@@ -12,10 +12,12 @@ pub struct Passport {
     // pub token_type: String,
     pub token: String,
     // pub expires_in: usize,
+    pub display_name: String,
+    pub avatar_url: Option<String>,
 }
 
 impl Passport {
-    pub fn new(user_id: i32) -> Result<Self> {
+    pub fn new(user_id: i32, display_name: String, avatar_url: Option<String>) -> Result<Self> {
         let jwt_env = get_jwt_env()?;
         let claims = Claims {
             sub: user_id.to_string(),
@@ -23,7 +25,11 @@ impl Passport {
             iat: Utc::now().timestamp() as usize,
         };
         let token = generate_token(jwt_env.secret, &claims)?;
-        Ok(Self { token })
+        Ok(Self {
+            token,
+            display_name,
+            avatar_url,
+        })
     }
 }
 
