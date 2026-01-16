@@ -21,7 +21,7 @@ where
     match user_case.login(model).await {
         Ok(passport) => (StatusCode::OK, Json(passport)).into_response(),
 
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Err(e) => (StatusCode::BAD_REQUEST, e.to_string()).into_response(),
     }
 }
 

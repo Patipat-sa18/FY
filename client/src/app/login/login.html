@@ -58,9 +58,9 @@
                     Get Start
                     }
                 </button>
-                <!-- 
-                //TODO:: Slide 1.Angular P.45
-                -->
+                @if (errorMsg.server() !== '') {
+                <span class="error">{{errorMsg.server()}}</span>
+                }
             </form>
             <div class="login-spacer">or</div>
             @if (mode === 'login') {

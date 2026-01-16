@@ -1,0 +1,7 @@
+### health-check
+GET http://127.0.0.1:8000/api/util/health-check
+
+
+### make-error
+# @prompt code status code
+GET http://127.0.0.1:8000/api/util/make-error/{{code}}

@@ -2,7 +2,56 @@
     flex: 1 1 auto;
 }
 
-app-navbar,
-.navbar {
-    flex: 0 0 auto;
+// app-navbar,
+// .navbar {
+//     flex: 0 0 auto;
+// }
+
+.my-navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+
+
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: none;
+        background: none;
+
+
+        mat-icon {
+            margin: 0;
+            margin-right: 0.2em;
+            padding: 0;
+        }
+    }
+
+
+    .home-btn {
+        font-size: x-large;
+    }
+
+
+    button:not(.home-btn) {
+        font-size: medium;
+        margin-top: 0.5em;
+    }
+
+
+    button.active:not(.home-btn) {
+        border-bottom: 0.15em solid #fd2121;
+    }
+
+
+    .avatar {
+        margin-right: 5px;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 }

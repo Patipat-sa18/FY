@@ -31,12 +31,15 @@ export class Login {
     password: signal(''),
     cf_password: signal(''),
     displayname: signal(''),
+    server: signal(''),
   }
 
   private _router = inject(Router)
   private _passport = inject(PassportService)
 
   constructor() {
+    if (this._passport.data())
+      this._router.navigate(['/'])
     this.form = new FormGroup({
       username: new FormControl(null, [
         Validators.required,
@@ -110,12 +113,16 @@ export class Login {
   }
 
   async onSubmit() {
+    this.errorMsg.server.set('')
+    let errMsg: string | null = null
     if (this.mode === 'login') {
-      const errMsg = await this._passport.get(this.form.value)
-      if (!errMsg) this._router.navigate(['/'])
+      errMsg = await this._passport.get(this.form.value)
     } else {
-      const errMsg = await this._passport.register(this.form.value)
-      if (!errMsg) this._router.navigate(['/'])
+      errMsg = await this._passport.register(this.form.value)
+    }
+    if (!errMsg) this._router.navigate(['/'])
+    else {
+      this.errorMsg.server.set(errMsg)
     }
   }
 }

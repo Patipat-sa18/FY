@@ -3,6 +3,7 @@
         "chrono",
         "ilike",
         "Insertable",
+        "intercaptors",
         "jsonwebtoken",
         "leavable",
         "maxlength",

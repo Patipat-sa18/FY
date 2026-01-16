@@ -38,6 +38,11 @@ export class PassportService {
     this.loadPassportFormLocalStorage()
   }
 
+  destroy() {
+    this.data.set(undefined)
+    localStorage.removeItem(this._key)
+  }
+
   async get(login: LoginModel): Promise<null | string> {
     const api_url = this._base_url + '/authentication/login'
     return await this.fetchPassport(api_url, login)
@@ -48,7 +53,7 @@ export class PassportService {
     return await this.fetchPassport(api_url, register)
   }
 
-  private async fetchPassport(api_url: string, model: LoginModel | RegisterModel) {
+  private async fetchPassport(api_url: string, model: LoginModel | RegisterModel): Promise<string | null> {
     try {
       const result = this._http.post<Passport>(api_url, model)
       const passport = await firstValueFrom(result)
@@ -56,7 +61,8 @@ export class PassportService {
       this.savePassportToLocalStorage()
       return null
     } catch (error: any) {
-      console.error(error)
+      // console.error(error)
+      // console.log(error.error)
       return error.error
     }
 
