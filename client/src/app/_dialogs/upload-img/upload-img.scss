@@ -1,0 +1,40 @@
+input[type="file"] {
+    visibility: hidden;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.image-preview {
+    width: 25rem;
+    margin: 0;
+}
+
+.image-preview img {
+    width: 100%;
+}
+
+.error-msg {
+    color: rgb(105, 10, 10);
+    font-size: medium;
+}
+
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+
+mat-dialog-actions {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1em;
+}

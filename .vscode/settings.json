@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "chrono",
+        "cludinary",
         "ilike",
         "Insertable",
         "intercaptors",
@@ -17,7 +18,7 @@
         "$shared": {},
         "dev": {
             "base_url": "http://127.0.0.1:8000/api",
-            "menta_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzY5MjM2MTY5LCJpYXQiOjE3NjY2NDQxNjl9.mRtxCkiRmBT2DBxhioyQgNMBfuZ1yhNmVmKJbBJlJWk"
+            "menta_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzc0MjU0ODI3LCJpYXQiOjE3NjkwNzA4Mjd9.8_mlRE8B2BVJwPotqvpJz959CYXBSDk-RNWlcf048kk"
         }
     }
 }

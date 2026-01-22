@@ -1,0 +1,23 @@
+<input type="text" [(ngModel)]="filter.name" placeholder="Mission Name">
+<select [(ngModel)]="filter.status">
+    <option value="">Not Selected</option>
+    <option value="Open">Open</option>
+    <option value="InProgress">InProgress</option>
+    <option value="Completed">Completed</option>
+    <option value="Failed">Failed</option>
+</select>
+<button (click)="onSubmit()">Go</button>
+
+@for (mission of missions; track $index) {
+<p>
+    <span>{{mission.name}}</span>
+    <span>{{mission.chief_id}}</span>
+    <span>{{mission.description}}</span>
+    <span>{{mission.crew_count}}</span>
+</p>
+}
+
+<!-- 
+todo:
+ทำ slide4. P 6 - 14 home-work
+-->

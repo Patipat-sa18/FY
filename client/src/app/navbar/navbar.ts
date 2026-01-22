@@ -20,7 +20,7 @@ export class Navbar {
 
   constructor() {
     this.display_name = computed(() => this._passport.data()?.display_name)
-    this.avatar_url = computed(() => getAvatarUrl(this._passport.data()))
+    this.avatar_url = computed(() => this._passport.avatar())
   }
 
   logout() {

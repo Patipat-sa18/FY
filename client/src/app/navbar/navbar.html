@@ -2,6 +2,9 @@
     <span class="home-btn" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
         LoL
     </span>
+    <button class="menu-button" routerLink="/missions" routerLinkActive="active">Missions</button>
+
+
     <span class="spacer"></span>
     @if (display_name()) {
     <button matButton [matMenuTriggerFor]="menu">
