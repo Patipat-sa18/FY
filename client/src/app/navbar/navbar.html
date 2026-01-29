@@ -3,6 +3,9 @@
         LoL
     </span>
     <button class="menu-button" routerLink="/missions" routerLinkActive="active">Missions</button>
+    @if(display_name()){
+    <button class="button" routerLink="/chief" routerLinkActive="active">My Missions</button>
+    }
 
 
     <span class="spacer"></span>

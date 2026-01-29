@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http'
 import { MissionFilter } from '../_models/mission-filter'
 import { firstValueFrom } from 'rxjs'
 import { Mission } from '../_models/mission'
+import { AddMission } from '../_models/add-mission'
 
 @Injectable({
   providedIn: 'root',
@@ -35,4 +36,21 @@ export class MissionService {
 
     return params.join("&")
   }
+
+  async add(mission: AddMission): Promise<number> {
+    const url = this._base_url + '/mission-management'
+    const observable = this._http.post<{ mission_id: number }>(url, mission)
+    const resp = await firstValueFrom(observable)
+    return resp.mission_id
+  }
+
+  async getMyMissions(): Promise<Mission[]> {
+    const url = this._base_url + '/brawler/my-missions'
+    console.log('get ' + url)
+    const observable = this._http.get<Mission[]>(url)
+    const missions = await firstValueFrom(observable)
+    return missions
+  }
+
+
 }

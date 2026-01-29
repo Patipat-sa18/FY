@@ -1,23 +1,47 @@
-<input type="text" [(ngModel)]="filter.name" placeholder="Mission Name">
-<select [(ngModel)]="filter.status">
-    <option value="">Not Selected</option>
-    <option value="Open">Open</option>
-    <option value="InProgress">InProgress</option>
-    <option value="Completed">Completed</option>
-    <option value="Failed">Failed</option>
-</select>
-<button (click)="onSubmit()">Go</button>
+<div class="filter-form">
+    <h3>Search</h3>
+    <!-- FormsModule  -->
+    <input type="text" [(ngModel)]="filter.name" placeholder="Mission Name" />
+    <select [(ngModel)]="filter.status">
+        <option value="">-- Select Status --</option>
+        <option value="Open">Open</option>
+        <option value="InProgress">In Progress</option>
+        <option value="Completed">Completed</option>
+        <option value="Failed">Failed</option>
+    </select>
+    <button (click)="onSubmit()">Go</button>
+</div>
+<div class="mission-list">
+    @if((missions$ | async)?.length) {
+    <div class="header">
+        <span class="name">Name</span>
+        <span class="description">Description</span>
+        <span class="name">Chief</span>
+        <span class="crew_count">Number of Crew</span>
+        <span class="status">Status</span>
+        <span class="created_at">Created at</span>
+        <span class="updated_at">Updated at</span>
+        @if(isSignin()){
+        <span class="action">Actions</span>
+        }
+    </div>
+    @for (mission of missions$ | async; track mission.id) {
+    <div class="contents">
+        <span class="name">{{mission.name}}</span>
+        <span class="description">{{mission.description}}</span>
+        <span class="name">{{mission.chief_display_name}}</span>
+        <span class="crew_count">{{mission.crew_count}}</span>
+        <span class="status">{{mission.status}}</span>
+        <span class="created_at">{{mission.created_at | date:'short'}}</span>
+        <span class="updated_at">{{mission.updated_at | date:'short'}}</span>
 
-@for (mission of missions; track $index) {
-<p>
-    <span>{{mission.name}}</span>
-    <span>{{mission.chief_id}}</span>
-    <span>{{mission.description}}</span>
-    <span>{{mission.crew_count}}</span>
-</p>
-}
+        <!-- fix: จะ join ไม่ได้ ถ้า chief_id ตรงกับ user_id ที่ login -->
+        <!-- แนวทาง เช่น หา user id จาก token หรือ ปรับให้ passport มี user_id โดยส่งมาจาก backend  -->
+        @if(isSignin()){
+        <span class="action">Join</span>
+        }
 
-<!-- 
-todo:
-ทำ slide4. P 6 - 14 home-work
--->
+    </div>
+    }
+    }
+</div>

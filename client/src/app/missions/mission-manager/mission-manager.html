@@ -1,0 +1,30 @@
+<div matButton class="new-mission">
+    <button mat-raised-button (click)="openDialog()"><mat-icon>add</mat-icon> new mission</button>
+</div>
+
+<div class="mission-list">
+    @if((myMissions$ | async)?.length) {
+    <div class="header">
+        <span class="name">Name</span>
+        <span class="description">Description</span>
+        <span class="crew_count">Number of Crew</span>
+        <span class="status">Status</span>
+        <span class="created_at">Created at</span>
+        <span class="updated_at">Updated at</span>
+        <span class="action">Actions</span>
+    </div>
+    @for (mission of myMissions$ | async; track mission.id) {
+
+    <div class="contents">
+        <span class="name">{{mission.name}}</span>
+        <span class="description">{{mission.description}}</span>
+        <span class="crew_count">{{mission.crew_count}}</span>
+        <span class="status">{{mission.status}}</span>
+        <span class="created_at">{{mission.created_at | date:'short'}}</span>
+        <span class="updated_at">{{mission.updated_at | date:'short'}}</span>
+        <span class="action"> Edit | Delete</span>
+    </div>
+
+    }
+    }
+</div>

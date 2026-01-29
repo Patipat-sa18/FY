@@ -40,7 +40,12 @@ where
     T2: MissionViewingRepository + Send + Sync,
 {
     match user_case.add(user_id, model).await {
-        Ok(mission_id) => (StatusCode::CREATED, mission_id.to_string()).into_response(),
+        Ok(mission_id) => {
+            let json_value = serde_json::json!({
+                "mission_id": mission_id,
+            });
+            (StatusCode::CREATED, axum::Json(json_value)).into_response()
+        }
 
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
     }

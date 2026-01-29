@@ -1,65 +1,43 @@
-/* Modern filter-form styling */
-.filter-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    background: #f5f7fa;
-    padding: 1.2rem 1.5rem 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
-    margin-bottom: 1.5rem;
+/* Floating button for .new-mission at bottom right */
+.new-mission {
+    position: fixed;
+    right: 2.5rem;
+    bottom: 2.5rem;
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.15);
+    border-radius: 50px;
+    background: transparent;
 }
 
-.filter-form input[type="text"],
-.filter-form select {
-    padding: 0.6rem 1rem;
-    border: 1px solid #cfd8dc;
-    border-radius: 6px;
-    font-size: 1rem;
-    background: #fff;
-    transition: border 0.2s;
-    min-width: 180px;
-}
-
-.filter-form input[type="text"]:focus,
-.filter-form select:focus {
-    border-color: #1976d2;
-    outline: none;
-}
-
-.filter-form button {
-    padding: 0.6rem 1.3rem;
-    border: none;
-    border-radius: 6px;
+.new-mission button {
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
     background: #1976d2;
     color: #fff;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
     transition: background 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
 }
 
-.filter-form button:hover {
+.new-mission button:hover {
     background: #1565c0;
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.18);
 }
 
 @media (max-width: 600px) {
-    .filter-form {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.7rem;
-        padding: 0.7rem 0.7rem 0.5rem 0.7rem;
+    .new-mission {
+        right: 1rem;
+        bottom: 1rem;
     }
 
-    .filter-form input[type="text"],
-    .filter-form select {
-        min-width: 0;
-        width: 100%;
+    .new-mission button {
+        padding: 0.6rem 1.1rem;
+        font-size: 1rem;
     }
 }
 
+/* Modern table-like styling for .mission-list and its children */
 .mission-list {
     display: flex;
     flex-direction: column;
@@ -74,7 +52,7 @@
 .mission-list .header,
 .mission-list .contents {
     display: grid;
-    grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr 1.5fr 1.5fr 1fr;
+    grid-template-columns: 1.5fr 2fr 1fr 1fr 1.5fr 1.5fr 1fr;
     align-items: center;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
@@ -136,3 +114,5 @@
         padding: 0.3rem 0.2rem;
     }
 }
+
+/* intentionally left empty - restored to original state */
