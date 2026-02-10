@@ -39,7 +39,7 @@ export class Login {
 
   constructor() {
     if (this._passport.data())
-      this._router.navigate(['/'])
+      this._router.navigate(['/missions'])
     this.form = new FormGroup({
       username: new FormControl(null, [
         Validators.required,
@@ -117,12 +117,16 @@ export class Login {
     let errMsg: string | null = null
     if (this.mode === 'login') {
       errMsg = await this._passport.get(this.form.value)
+      if (!errMsg) this._router.navigate(['/missions'])
+      else this.errorMsg.server.set(errMsg)
     } else {
       errMsg = await this._passport.register(this.form.value)
-    }
-    if (!errMsg) this._router.navigate(['/'])
-    else {
-      this.errorMsg.server.set(errMsg)
+      if (!errMsg) {
+        this.toggleMode()
+      }
+      else {
+        this.errorMsg.server.set(errMsg)
+      }
     }
   }
 }

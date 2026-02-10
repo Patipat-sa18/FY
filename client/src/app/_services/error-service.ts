@@ -44,10 +44,14 @@ export class ErrorService {
         case 509:
         case 510:
         case 511:
-          const navExtra: NavigationExtras = {
-            state: { error: error.error }
+          if (typeof error.error === 'string' && error.error.includes('Cloudinary is not configured')) {
+            this._snackBar.open(error.error, 'ok', this._snackBarConfig)
+          } else {
+            const navExtra: NavigationExtras = {
+              state: { error: error.error }
+            }
+            this._router.navigate(['/server-error'], navExtra)
           }
-          this._router.navigate(['/server-error'], navExtra)
           break
         default:
           this._snackBar.open('some thing went wrong!!, please try again later', 'ok', this._snackBarConfig)

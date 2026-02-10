@@ -1,30 +1,91 @@
-<div matButton class="new-mission">
-    <button mat-raised-button (click)="openDialog()"><mat-icon>add</mat-icon> new mission</button>
+@if (notificationMessage) {
+<div class="notification-overlay" (click)="closeNotification()">
+    <div class="notification-card" (click)="$event.stopPropagation()">
+        <mat-icon>info</mat-icon>
+        <p>{{ notificationMessage }}</p>
+    </div>
 </div>
+}
 
-<div class="mission-list">
-    @if((myMissions$ | async)?.length) {
-    <div class="header">
-        <span class="name">Name</span>
-        <span class="description">Description</span>
-        <span class="crew_count">Number of Crew</span>
-        <span class="status">Status</span>
-        <span class="created_at">Created at</span>
-        <span class="updated_at">Updated at</span>
-        <span class="action">Actions</span>
-    </div>
-    @for (mission of myMissions$ | async; track mission.id) {
-
-    <div class="contents">
-        <span class="name">{{mission.name}}</span>
-        <span class="description">{{mission.description}}</span>
-        <span class="crew_count">{{mission.crew_count}}</span>
-        <span class="status">{{mission.status}}</span>
-        <span class="created_at">{{mission.created_at | date:'short'}}</span>
-        <span class="updated_at">{{mission.updated_at | date:'short'}}</span>
-        <span class="action"> Edit | Delete</span>
+<div class="page-container">
+    <div class="new-mission">
+        <button mat-raised-button (click)="openDialog()"><mat-icon>add</mat-icon> new mission</button>
     </div>
 
-    }
-    }
+    <div class="mission-list">
+        @for (mission of myMissions$ | async; track mission.id) {
+        <div class="mission-card">
+            @if (isEditing(mission.id)) {
+            <!-- Edit Mode -->
+            <div class="card-header editing">
+                <h3>Editing Mission</h3>
+                <div class="actions">
+                    <button class="primary" (click)="saveEdit()">Save</button>
+                    <button (click)="cancelEdit()">Cancel</button>
+                </div>
+            </div>
+
+            <div class="card-body form-grid">
+                <div class="form-group">
+                    <label>Mission Name</label>
+                    <input type="text" [(ngModel)]="editForm.name" placeholder="Enter name" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" [(ngModel)]="editForm.description" placeholder="Enter description" />
+                </div>
+
+                <div class="form-group">
+                    <label>Max Crew</label>
+                    <div class="crew-input">
+                        <input type="number" [(ngModel)]="editForm.max_crew" placeholder="Max" />
+                        <span>(Current: {{mission.crew_count}})</span>
+                    </div>
+                </div>
+            </div>
+
+            } @else {
+            <!-- View Mode -->
+            <div class="card-header">
+                <h3>{{mission.name}}</h3>
+                <div class="status-badge" [class]="mission.status">{{mission.status}}</div>
+            </div>
+
+            <div class="card-body">
+                <div class="info-item full-width">
+                    <label>Description</label>
+                    <p>{{mission.description || 'No description provided'}}</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Crew Members</label>
+                        <span>{{mission.crew_count}} / {{mission.max_crew}}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Created Date</label>
+                        <span>{{mission.created_at | date:'mediumDate'}}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Last Updated</label>
+                        <span>{{mission.updated_at | date:'mediumDate'}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <button class="btn" (click)="startEdit(mission)">
+                    Edit Mission
+                </button>
+                <button class="btn danger" (click)="deleteMission(mission.id)">
+                    Delete
+                </button>
+            </div>
+            }
+        </div>
+        }
+    </div>
 </div>

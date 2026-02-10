@@ -52,5 +52,20 @@ export class MissionService {
     return missions
   }
 
+  async join(missionId: number): Promise<string> {
+    const url = this._base_url + `/crew/join/${missionId}`
+    return await firstValueFrom(this._http.post(url, {}, { responseType: 'text' }))
+  }
+
+  async edit(missionId: number, data: Partial<Mission>): Promise<string> {
+    const url = this._base_url + `/mission-management/${missionId}`
+    return await firstValueFrom(this._http.patch(url, data, { responseType: 'text' }))
+  }
+
+  async delete(missionId: number): Promise<string> {
+    const url = this._base_url + `/mission-management/${missionId}`
+    return await firstValueFrom(this._http.delete(url, { responseType: 'text' }))
+  }
+
 
 }

@@ -47,7 +47,16 @@ where
             (StatusCode::CREATED, axum::Json(json_value)).into_response()
         }
 
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Err(e) => {
+            let status = if e.to_string().contains("characters long")
+                || e.to_string().contains("taken by brawler")
+            {
+                StatusCode::BAD_REQUEST
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            (status, e.to_string()).into_response()
+        }
     }
 }
 
@@ -68,7 +77,16 @@ where
         )
             .into_response(),
 
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Err(e) => {
+            let status = if e.to_string().contains("characters long")
+                || e.to_string().contains("taken by brawler")
+            {
+                StatusCode::BAD_REQUEST
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            (status, e.to_string()).into_response()
+        }
     }
 }
 
@@ -88,7 +106,16 @@ where
         )
             .into_response(),
 
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Err(e) => {
+            let status = if e.to_string().contains("characters long")
+                || e.to_string().contains("taken by brawler")
+            {
+                StatusCode::BAD_REQUEST
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            (status, e.to_string()).into_response()
+        }
     }
 }
 

@@ -48,6 +48,9 @@ SELECT m.id,
         m.chief_id,
         COALESCE(b.display_name, '') AS chief_display_name,
         COUNT(cm.brawler_id) AS crew_count,
+        COUNT(cm.brawler_id) AS crew_count,
+        m.max_crew,
+        m.created_at,
         m.created_at,
         m.updated_at
 FROM missions m
@@ -79,6 +82,9 @@ SELECT m.id,
         m.chief_id,
         COALESCE(b.display_name, '') AS chief_display_name,
         COUNT(cm.brawler_id) AS crew_count,
+        COUNT(cm.brawler_id) AS crew_count,
+        m.max_crew,
+        m.created_at,
         m.created_at,
         m.updated_at
 FROM missions m
@@ -132,5 +138,16 @@ ORDER BY m.created_at DESC
             .load::<BrawlerModel>(&mut conn)?;
 
         Ok(brawler_list)
+    }
+    async fn is_crew_member(&self, mission_id: i32, brawler_id: i32) -> Result<bool> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+
+        let count = crew_memberships::table
+            .filter(crew_memberships::mission_id.eq(mission_id))
+            .filter(crew_memberships::brawler_id.eq(brawler_id))
+            .count()
+            .get_result::<i64>(&mut conn)?;
+
+        Ok(count > 0)
     }
 }

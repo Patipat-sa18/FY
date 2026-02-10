@@ -11,4 +11,5 @@ pub trait MissionViewingRepository {
     async fn get_one(&self, mission_id: i32) -> Result<MissionModel>;
     async fn get_all(&self, mission_filter: &MissionFilter) -> Result<Vec<MissionModel>>;
     async fn get_crew(&self, mission_id: i32) -> Result<Vec<BrawlerModel>>;
+    async fn is_crew_member(&self, mission_id: i32, brawler_id: i32) -> Result<bool>;
 }

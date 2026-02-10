@@ -1,9 +1,10 @@
 <mat-toolbar class="my-navbar">
     <span class="home-btn" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
-        LoL
+        <!-- Logo Removed as per request -->
+        <mat-icon>home</mat-icon>
     </span>
-    <button class="menu-button" routerLink="/missions" routerLinkActive="active">Missions</button>
     @if(display_name()){
+    <button class="menu-button" routerLink="/missions" routerLinkActive="active">Missions</button>
     <button class="button" routerLink="/chief" routerLinkActive="active">My Missions</button>
     }
 

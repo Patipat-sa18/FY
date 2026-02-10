@@ -2,6 +2,7 @@ export interface Passport {
     token: string,
     display_name: string,
     avatar_url?: string
+    id: number
 }
 
 export interface RegisterModel {

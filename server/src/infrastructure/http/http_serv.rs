@@ -63,6 +63,7 @@ fn api_serve(db_pool: Arc<PgPoolSquad>) -> Router {
 pub async fn start(config: Arc<DotEnvyConfig>, db_pool: Arc<PgPoolSquad>) -> Result<()> {
     let app = Router::new()
         .merge(static_serve())
+        .nest_service("/uploads", ServeDir::new("uploads"))
         .nest("/api", api_serve(db_pool))
         // .fallback(default_router::health_check)
         // .route("/health_check", get(default_router::health_check)

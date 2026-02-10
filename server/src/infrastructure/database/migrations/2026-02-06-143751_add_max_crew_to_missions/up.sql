@@ -1,0 +1,1 @@
+ALTER TABLE missions ADD COLUMN max_crew INT NOT NULL DEFAULT 5;

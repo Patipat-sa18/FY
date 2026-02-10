@@ -1,118 +1,351 @@
+@import '../../app.scss';
+
 /* Floating button for .new-mission at bottom right */
 .new-mission {
     position: fixed;
     right: 2.5rem;
     bottom: 2.5rem;
     z-index: 100;
-    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.15);
-    border-radius: 50px;
-    background: transparent;
 }
 
 .new-mission button {
     border-radius: 50px;
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 2rem;
     font-size: 1.1rem;
     font-weight: 500;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
-    background: #1976d2;
+    box-shadow: 0 5px 20px rgba(34, 179, 193, 0.4);
+    background: $primary-color;
     color: #fff;
-    transition: background 0.2s, box-shadow 0.2s;
+    border: none;
+    transition: all 0.3s ease;
 }
 
 .new-mission button:hover {
-    background: #1565c0;
-    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.18);
+    background: $primary-hover;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(34, 179, 193, 0.6);
 }
 
 @media (max-width: 600px) {
     .new-mission {
-        right: 1rem;
-        bottom: 1rem;
-    }
-
-    .new-mission button {
-        padding: 0.6rem 1.1rem;
-        font-size: 1rem;
+        right: 1.5rem;
+        bottom: 1.5rem;
     }
 }
 
 /* Modern table-like styling for .mission-list and its children */
+/* Card Layout for Mission Manager */
 .mission-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.5rem;
+    padding-bottom: 5rem; // Space for floating button
+}
+
+.mission-card {
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 0.5rem 0 1rem 0;
-    overflow-x: auto;
+    border-radius: 23px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: rgba(34, 179, 193, 0.3);
+    }
 }
 
-.mission-list .header,
-.mission-list .contents {
-    display: grid;
-    grid-template-columns: 1.5fr 2fr 1fr 1fr 1.5fr 1.5fr 1fr;
+.card-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+
+    h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $text-color;
+    }
+
+    &.editing h3 {
+        color: $primary-color;
+    }
 }
 
-.mission-list .header {
-    background: #f5f7fa;
-    font-weight: 500;
-    color: #333;
-    border-bottom: 2px solid #e0e0e0;
-    border-radius: 12px 12px 0 0;
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &.Open {
+        background: rgba(34, 179, 193, 0.1);
+        color: $primary-color;
+    }
+
+    &.InProgress {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    &.Completed {
+        background: rgba(76, 175, 80, 0.1);
+        color: #4caf50;
+    }
+
+    &.Failed {
+        background: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+    }
 }
 
-.mission-list .contents {
-    background: #fafbfc;
-    border-bottom: 1px solid #ececec;
-    transition: background 0.2s;
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem 0;
 }
 
-.mission-list .contents:hover {
-    background: #f0f4f8;
+.info-item {
+    &.full-width {
+        border-bottom: 1px solid #f9f9f9;
+        padding-bottom: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $secondary-text;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+
+    p {
+        font-size: 1rem;
+        color: $text-color;
+        line-height: 1.6;
+        margin: 0;
+    }
 }
 
-.mission-list .name,
-.mission-list .description,
-.mission-list .crew_count,
-.mission-list .status,
-.mission-list .created_at,
-.mission-list .updated_at,
-.mission-list .action {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+
+    .info-item span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $text-color;
+        display: block;
+    }
 }
 
-.mission-list .contents .action {
-    text-align: center;
-    color: #1976d2;
-    /* cursor: pointer; */
-    font-weight: 400;
-}
+.card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f5f5f5;
 
-@media (max-width: 900px) {
-
-    .mission-list .header,
-    .mission-list .contents {
-        grid-template-columns: 1.2fr 1.5fr 0.8fr 0.8fr 1fr 1fr 0.8fr;
+    button {
+        padding: 0.6rem 2rem;
+        border-radius: 50px;
         font-size: 0.95rem;
-        padding: 0.5rem 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &.btn {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            color: $text-color;
+
+            &:hover {
+                border-color: $primary-color;
+                color: $primary-color;
+                background: rgba(34, 179, 193, 0.05);
+                transform: translateY(-2px);
+            }
+        }
+
+        &.danger {
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #d32f2f;
+
+            &:hover {
+                background: #fef2f2;
+                border-color: #d32f2f;
+                color: #b71c1c;
+            }
+        }
     }
 }
 
-@media (max-width: 600px) {
+/* Edit Mode Styles */
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
 
-    .mission-list .header,
-    .mission-list .contents {
-        grid-template-columns: 1fr 1.5fr 0.7fr 0.7fr 1fr 1fr 0.7fr;
-        font-size: 0.85rem;
-        padding: 0.3rem 0.2rem;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $text-color;
+    }
+
+    input {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba(34, 180, 193, 0.1);
+        }
     }
 }
 
-/* intentionally left empty - restored to original state */
+.crew-input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    input {
+        width: 100px;
+    }
+
+    span {
+        color: $secondary-text;
+        font-size: 0.9rem;
+    }
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 500;
+
+        &.primary {
+            background: $primary-color;
+            color: white;
+            border: none;
+
+            &:hover {
+                background: $primary-hover;
+            }
+        }
+
+        &:not(.primary) {
+            background: transparent;
+            border: 1px solid #ddd;
+
+            &:hover {
+                background: #f0f0f0;
+            }
+        }
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.notification-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    animation: fadeIn 0.2s ease-out;
+
+    .notification-card {
+        background: #fff;
+        padding: 2rem 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+        transform: scale(0.9);
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        border: 2px solid $primary-color;
+
+        mat-icon {
+            font-size: 3rem;
+            width: 3rem;
+            height: 3rem;
+            color: $primary-color;
+        }
+
+        p {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: $text-color;
+            margin: 0;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    to {
+        transform: scale(1);
+    }
+}

@@ -68,15 +68,15 @@ where
             }
         }
 
-        let crew_count = self
-            .mission_viewing_repository
-            .crew_counting(mission_id)
-            .await?;
-        if crew_count > 0 {
-            return Err(anyhow::anyhow!(
-                "Mission has been taken by brawler for now!"
-            ));
-        }
+        // let crew_count = self
+        //     .mission_viewing_repository
+        //     .crew_counting(mission_id)
+        //     .await?;
+        // if crew_count > 0 {
+        //     return Err(anyhow::anyhow!(
+        //         "Mission has been taken by brawler for now!"
+        //     ));
+        // }
 
         let edit_mission_entity = edit_mission_model.to_entity(chief_id);
 
@@ -89,15 +89,15 @@ where
     }
 
     pub async fn remove(&self, mission_id: i32, chief_id: i32) -> Result<()> {
-        let crew_count = self
-            .mission_viewing_repository
-            .crew_counting(mission_id)
-            .await?;
-        if crew_count > 0 {
-            return Err(anyhow::anyhow!(
-                "Mission has been taken by brawler for now!"
-            ));
-        }
+        // let crew_count = self
+        //     .mission_viewing_repository
+        //     .crew_counting(mission_id)
+        //     .await?;
+        // if crew_count > 0 {
+        //     return Err(anyhow::anyhow!(
+        //         "Mission has been taken by brawler for now!"
+        //     ));
+        // }
 
         self.mission_management_repository
             .remove(mission_id, chief_id)

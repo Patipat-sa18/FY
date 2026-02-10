@@ -58,7 +58,13 @@ where
     match user_case.register(model).await {
         Ok(passport) => (StatusCode::CREATED, Json(passport)).into_response(),
 
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Err(e) => {
+            if e.to_string().contains("Username already exists") {
+                (StatusCode::CONFLICT, e.to_string()).into_response()
+            } else {
+                (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+            }
+        }
     }
 }
 

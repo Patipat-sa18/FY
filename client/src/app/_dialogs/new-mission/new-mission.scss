@@ -1,0 +1,138 @@
+:host {
+    display: block;
+    background: #ffffff;
+    color: #333333;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e6ed;
+}
+
+[mat-dialog-title] {
+    font-family: 'Roboto', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a2a40;
+    margin-bottom: 20px;
+    text-align: left;
+    border-bottom: 1px solid #f0f4f8;
+    padding-bottom: 16px;
+}
+
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 4px 0 !important;
+    overflow-y: hidden !important;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+        font-size: 13px;
+        color: #5a6b8a;
+        font-weight: 500;
+    }
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+        position: absolute;
+        left: 14px;
+        color: #0066ff;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        background: #f8fbff;
+        border: 1.5px solid #d0deff;
+        color: #1a2a40;
+        padding: 14px 14px 14px 46px;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: all 0.25s ease;
+        outline: none;
+
+        &::placeholder {
+            color: #9ab2d6;
+        }
+
+        &:focus {
+            border-color: #0066ff;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+        }
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+}
+
+mat-dialog-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 0 !important;
+
+    button {
+        font-weight: 600;
+        padding: 0 24px !important;
+        height: 48px !important;
+        border-radius: 6px !important;
+        text-transform: none;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+
+        &.cancel-btn {
+            color: #5a6b8a;
+
+            &:hover {
+                background: #f0f4f8;
+            }
+        }
+
+        &[mat-flat-button] {
+            // Overriding Material Primary if needed, but keeping it standard blue
+            background: #0066ff;
+            color: #ffffff !important;
+
+            &:hover:not(:disabled) {
+                background: #0052cc;
+                box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+            }
+        }
+    }
+}
+
+// Custom Scrollbar
+textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: #d0deff;
+    border-radius: 4px;
+
+    &:hover {
+        background: #9ab2d6;
+    }
+}

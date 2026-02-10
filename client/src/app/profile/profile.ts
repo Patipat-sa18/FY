@@ -4,10 +4,11 @@ import { PassportService } from '../_services/passport-service'
 import { MatDialog } from '@angular/material/dialog'
 import { UploadImg } from '../_dialogs/upload-img/upload-img'
 import { UserService } from '../_services/user-service'
+import { MatIconModule } from '@angular/material/icon'
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [MatIconModule],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })

@@ -1,47 +1,64 @@
-<div class="filter-form">
-    <h3>Search</h3>
-    <!-- FormsModule  -->
-    <input type="text" [(ngModel)]="filter.name" placeholder="Mission Name" />
-    <select [(ngModel)]="filter.status">
-        <option value="">-- Select Status --</option>
-        <option value="Open">Open</option>
-        <option value="InProgress">In Progress</option>
-        <option value="Completed">Completed</option>
-        <option value="Failed">Failed</option>
-    </select>
-    <button (click)="onSubmit()">Go</button>
+@if (notificationMessage) {
+<div class="notification-overlay" (click)="closeNotification()">
+    <div class="notification-card" (click)="$event.stopPropagation()">
+        <mat-icon>info</mat-icon>
+        <p>{{ notificationMessage }}</p>
+    </div>
 </div>
-<div class="mission-list">
-    @if((missions$ | async)?.length) {
-    <div class="header">
-        <span class="name">Name</span>
-        <span class="description">Description</span>
-        <span class="name">Chief</span>
-        <span class="crew_count">Number of Crew</span>
-        <span class="status">Status</span>
-        <span class="created_at">Created at</span>
-        <span class="updated_at">Updated at</span>
-        @if(isSignin()){
-        <span class="action">Actions</span>
+}
+
+<div class="page-container">
+    <div class="filter-form">
+        <h3>Search</h3>
+        <!-- FormsModule  -->
+        <input type="text" [(ngModel)]="filter.name" placeholder="Mission Name" />
+        <select [(ngModel)]="filter.status">
+            <option value="">-- Select Status --</option>
+            <option value="Open">Open</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Failed">Failed</option>
+        </select>
+        <button (click)="onSubmit()">Go</button>
+    </div>
+    <div class="mission-list">
+        @for (mission of missions$ | async; track mission.id) {
+        <div class="mission-card">
+            <div class="card-header">
+                <h3>{{mission.name}}</h3>
+                <div class="status-badge" [class]="mission.status">{{mission.status}}</div>
+            </div>
+
+            <div class="card-body">
+                <div class="info-item full-width">
+                    <label>Description</label>
+                    <p>{{mission.description || 'No description provided'}}</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Chief</label>
+                        <span>{{mission.chief_display_name}}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Crew Members</label>
+                        <span>{{mission.crew_count}} / {{mission.max_crew}}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <label>Created Date</label>
+                        <span>{{mission.created_at | date:'mediumDate'}}</span>
+                    </div>
+                </div>
+            </div>
+
+            @if(isSignin() && mission.chief_id !== userId()){
+            <div class="card-actions">
+                <button class="primary" (click)="join(mission.id)">Join Mission</button>
+            </div>
+            }
+        </div>
         }
     </div>
-    @for (mission of missions$ | async; track mission.id) {
-    <div class="contents">
-        <span class="name">{{mission.name}}</span>
-        <span class="description">{{mission.description}}</span>
-        <span class="name">{{mission.chief_display_name}}</span>
-        <span class="crew_count">{{mission.crew_count}}</span>
-        <span class="status">{{mission.status}}</span>
-        <span class="created_at">{{mission.created_at | date:'short'}}</span>
-        <span class="updated_at">{{mission.updated_at | date:'short'}}</span>
-
-        <!-- fix: จะ join ไม่ได้ ถ้า chief_id ตรงกับ user_id ที่ login -->
-        <!-- แนวทาง เช่น หา user id จาก token หรือ ปรับให้ passport มี user_id โดยส่งมาจาก backend  -->
-        @if(isSignin()){
-        <span class="action">Join</span>
-        }
-
-    </div>
-    }
-    }
 </div>

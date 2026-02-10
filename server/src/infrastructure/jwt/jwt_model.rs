@@ -14,6 +14,7 @@ pub struct Passport {
     // pub expires_in: usize,
     pub display_name: String,
     pub avatar_url: Option<String>,
+    pub id: i32,
 }
 
 impl Passport {
@@ -29,6 +30,7 @@ impl Passport {
             token,
             display_name,
             avatar_url,
+            id: user_id,
         })
     }
 }

@@ -6,6 +6,7 @@ use chrono::{Duration, Utc};
 //     query_dsl::methods::{FilterDsl, SelectDsl},
 // };
 use diesel::{dsl::insert_into, prelude::*};
+use diesel::result::{Error, DatabaseErrorKind};
 use std::sync::Arc;
 
 use crate::{
@@ -45,10 +46,17 @@ impl BrawlerRepository for BrawlerPostgres {
     async fn register(&self, register_brawler_entity: RegisterBrawlerEntity) -> Result<Passport> {
         let mut connection = Arc::clone(&self.db_pool).get()?;
 
-        let user_id = insert_into(brawlers::table)
+        let user_id = match insert_into(brawlers::table)
             .values(&register_brawler_entity)
             .returning(brawlers::id)
-            .get_result::<i32>(&mut connection)?;
+            .get_result::<i32>(&mut connection)
+        {
+            std::result::Result::Ok(id) => id,
+            Err(Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => {
+                anyhow::bail!("Username already exists");
+            }
+            Err(e) => return Err(e.into()),
+        };
 
         let display_name = register_brawler_entity.display_name;
 
@@ -63,6 +71,7 @@ impl BrawlerRepository for BrawlerPostgres {
             token,
             display_name,
             avatar_url: None,
+            id: user_id,
         })
     }
 
@@ -112,6 +121,8 @@ SELECT
     missions.chief_id,
     brawlers.display_name AS chief_display_name,
     (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
+    (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
+    missions.max_crew,
     missions.created_at,
     missions.updated_at
 FROM missions

@@ -22,6 +22,8 @@ pub struct MissionModel {
     pub chief_display_name: String,
     #[diesel(sql_type = BigInt)]
     pub crew_count: i64,
+    #[diesel(sql_type = Int4)]
+    pub max_crew: i32,
     #[diesel(sql_type = Timestamp)]
     pub created_at: NaiveDateTime,
     #[diesel(sql_type = Timestamp)]
@@ -49,6 +51,7 @@ impl AddMissionModel {
 pub struct EditMissionModel {
     pub name: Option<String>,
     pub description: Option<String>,
+    pub max_crew: Option<i32>,
 }
 
 impl EditMissionModel {
@@ -56,6 +59,7 @@ impl EditMissionModel {
         EditMissionEntity {
             name: self.name.clone(),
             description: self.description.clone(),
+            max_crew: self.max_crew,
             chief_id,
         }
     }

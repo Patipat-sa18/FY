@@ -65,7 +65,12 @@ export class PassportService {
 
   async register(register: RegisterModel): Promise<null | string> {
     const api_url = this._base_url + '/brawler/register'
-    return await this.fetchPassport(api_url, register)
+    try {
+      await firstValueFrom(this._http.post(api_url, register))
+      return null
+    } catch (error: any) {
+      return error.error
+    }
   }
 
   private async fetchPassport(api_url: string, model: LoginModel | RegisterModel): Promise<string | null> {

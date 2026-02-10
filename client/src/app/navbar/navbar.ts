@@ -5,10 +5,11 @@ import { PassportService } from '../_services/passport-service'
 import { MatMenuModule } from '@angular/material/menu'
 import { getAvatarUrl } from '../_helpers/util'
 import { Router, RouterLink, RouterLinkActive } from "@angular/router"
+import { MatIconModule } from '@angular/material/icon'
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatToolbarModule, MatButtonModule, MatMenuModule, RouterLink, RouterLinkActive],
+  imports: [MatToolbarModule, MatButtonModule, MatMenuModule, RouterLink, RouterLinkActive, MatIconModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })

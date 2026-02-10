@@ -31,8 +31,9 @@ where
 
     pub async fn join(&self, mission_id: i32, brawler_id: i32) -> Result<()> {
         let max_crew_per_mission = std::env::var("MAX_CREW_PER_MISSION")
-            .expect("missing value")
-            .parse()?;
+            .unwrap_or_else(|_| "5".to_string())
+            .parse()
+            .unwrap_or(5);
 
         let mission = self.mission_viewing_repository.get_one(mission_id).await?;
 
@@ -40,6 +41,14 @@ where
             return Err(anyhow::anyhow!(
                 "The Chief can not join in his own mission as a crew member!!"
             ));
+        }
+
+        if self
+            .mission_viewing_repository
+            .is_crew_member(mission_id, brawler_id)
+            .await?
+        {
+            return Err(anyhow::anyhow!("You have already joined this mission!!"));
         }
 
         let crew_count = self
