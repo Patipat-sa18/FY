@@ -27,9 +27,7 @@ use crate::{
 
 fn static_serve() -> Router {
     let dir = "statics";
-
     let service = ServeDir::new(dir).not_found_service(ServeFile::new(format!("{dir}/index.html")));
-
     Router::new().fallback_service(service)
 }
 
@@ -62,10 +60,9 @@ fn api_serve(db_pool: Arc<PgPoolSquad>) -> Router {
 
 pub async fn start(config: Arc<DotEnvyConfig>, db_pool: Arc<PgPoolSquad>) -> Result<()> {
     let app = Router::new()
-        .merge(static_serve())
         .nest_service("/uploads", ServeDir::new("uploads"))
         .nest("/api", api_serve(db_pool))
-        // .fallback(default_router::health_check)
+        .fallback_service(static_serve())
         // .route("/health_check", get(default_router::health_check)
         // .route("/make-error", get(default_router::make_error)
         .layer(tower_http::timeout::TimeoutLayer::with_status_code(
@@ -94,6 +91,11 @@ pub async fn start(config: Arc<DotEnvyConfig>, db_pool: Arc<PgPoolSquad>) -> Res
     let listener = TcpListener::bind(addr).await?;
 
     info!("Server start on port {}", config.server.port);
+    
+    if let Err(e) = open::that(format!("http://localhost:{}", config.server.port)) {
+        info!("Failed to open browser: {}", e);
+    }
+
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await?;
