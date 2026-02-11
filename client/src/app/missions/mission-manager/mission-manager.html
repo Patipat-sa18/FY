@@ -8,8 +8,15 @@
 }
 
 <div class="page-container">
-    <div class="new-mission">
-        <button mat-raised-button (click)="openDialog()"><mat-icon>add</mat-icon> new mission</button>
+    <div class="page-header">
+        <div class="header-content">
+            <h2>My Missions</h2>
+        </div>
+        <div class="header-actions">
+            <button class="add-btn" (click)="openDialog()">
+                <mat-icon>add</mat-icon> Create New Mission
+            </button>
+        </div>
     </div>
 
     <div class="mission-list">
@@ -48,29 +55,48 @@
             } @else {
             <!-- View Mode -->
             <div class="card-header">
-                <h3>{{mission.name}}</h3>
+                <div class="name-container">
+                    <mat-icon class="header-icon">assignment</mat-icon>
+                    <h3>{{mission.name}}</h3>
+                </div>
                 <div class="status-badge" [class]="mission.status">{{mission.status}}</div>
             </div>
 
             <div class="card-body">
                 <div class="info-item full-width">
-                    <label>Description</label>
+                    <div class="info-header">
+                        <mat-icon>description</mat-icon>
+                        <label>Description</label>
+                    </div>
                     <p>{{mission.description || 'No description provided'}}</p>
                 </div>
 
                 <div class="info-grid">
                     <div class="info-item">
-                        <label>Crew Members</label>
-                        <span>{{mission.crew_count}} / {{mission.max_crew}}</span>
+                        <div class="info-header">
+                            <mat-icon>group</mat-icon>
+                            <label>Crew Members</label>
+                        </div>
+                        <div class="info-value">
+                            <span>{{mission.crew_count}}</span>
+                            <span class="separator">/</span>
+                            <span class="max">{{mission.max_crew}}</span>
+                        </div>
                     </div>
 
                     <div class="info-item">
-                        <label>Created Date</label>
+                        <div class="info-header">
+                            <mat-icon>calendar_today</mat-icon>
+                            <label>Created Date</label>
+                        </div>
                         <span>{{mission.created_at | date:'mediumDate'}}</span>
                     </div>
 
                     <div class="info-item">
-                        <label>Last Updated</label>
+                        <div class="info-header">
+                            <mat-icon>update</mat-icon>
+                            <label>Last Updated</label>
+                        </div>
                         <span>{{mission.updated_at | date:'mediumDate'}}</span>
                     </div>
                 </div>

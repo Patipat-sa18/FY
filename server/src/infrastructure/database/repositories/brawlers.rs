@@ -121,7 +121,6 @@ SELECT
     missions.chief_id,
     brawlers.display_name AS chief_display_name,
     (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
-    (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
     missions.max_crew,
     missions.created_at,
     missions.updated_at

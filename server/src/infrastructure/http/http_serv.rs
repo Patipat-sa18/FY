@@ -27,7 +27,8 @@ use crate::{
 
 fn static_serve() -> Router {
     let dir = "statics";
-    let service = ServeDir::new(dir).not_found_service(ServeFile::new(format!("{dir}/index.html")));
+    let index_path = std::env::current_dir().unwrap().join(dir).join("index.html");
+    let service = ServeDir::new(dir).not_found_service(ServeFile::new(index_path));
     Router::new().fallback_service(service)
 }
 
@@ -92,9 +93,46 @@ pub async fn start(config: Arc<DotEnvyConfig>, db_pool: Arc<PgPoolSquad>) -> Res
 
     info!("Server start on port {}", config.server.port);
     
-    if let Err(e) = open::that(format!("http://localhost:{}", config.server.port)) {
-        info!("Failed to open browser: {}", e);
-    }
+    let url = format!("http://localhost:{}", config.server.port);
+    
+    // Spawn a task to open the browser after the server has started
+    tokio::spawn(async move {
+        tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
+        
+        let mut success = false;
+        // Try standard Linux open command
+        if std::process::Command::new("xdg-open")
+            .arg(&url)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .is_ok() {
+            success = true;
+        }
+
+        if !success {
+            // Fallback to python webbrowser module
+            if std::process::Command::new("python3")
+                .args(["-m", "webbrowser", &url])
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn()
+                .is_ok() {
+                success = true;
+            }
+        }
+
+        if !success {
+            // Last resort: the 'open' crate
+            let _ = open::that(&url);
+        }
+
+        println!("\n\x1b[1m****************************************\x1b[0m");
+        println!("\x1b[1;32m   SERVER IS RUNNING SUCCESSFULLY!   \x1b[0m");
+        println!("\x1b[1m   URL: \x1b[4;34m{}\x1b[0m", url);
+        println!("\x1b[1m****************************************\x1b[0m\n");
+        println!("(If the website didn't open automatically, please click the link above)\n");
+    });
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())

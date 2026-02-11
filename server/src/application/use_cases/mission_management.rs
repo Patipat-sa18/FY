@@ -13,6 +13,7 @@ where
     T2: MissionViewingRepository + Send + Sync,
 {
     mission_management_repository: Arc<T1>,
+    #[allow(dead_code)]
     mission_viewing_repository: Arc<T2>,
 }
 
