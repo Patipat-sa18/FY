@@ -39,6 +39,8 @@ diesel::table! {
         updated_at -> Timestamp,
         deleted_at -> Nullable<Timestamp>,
         max_crew -> Int4,
+        #[max_length = 50]
+        difficulty -> Varchar,
     }
 }
 

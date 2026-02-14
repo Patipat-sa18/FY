@@ -40,7 +40,7 @@ pub async fn save_locally(base64_image: Base64Img) -> Result<UploadedImg> {
 
     fs::write(&file_path, decoded_bytes).context("failed to write file to local storage")?;
 
-    let local_url = format!("http://localhost:8000/uploads/{}", filename);
+    let local_url = format!("/uploads/{}", filename);
 
     Ok(UploadedImg {
         url: local_url,

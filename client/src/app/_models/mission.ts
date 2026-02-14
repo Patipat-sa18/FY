@@ -2,6 +2,7 @@ export interface Mission {
     id: number
     name: string
     description?: string
+    difficulty: string
     status: string
     chief_id: number
     chief_display_name: string

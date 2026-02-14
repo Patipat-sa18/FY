@@ -14,6 +14,7 @@ pub struct MissionEntity {
     pub name: String,
     pub status: String,
     pub description: Option<String>,
+    pub difficulty: String,
     pub max_crew: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
@@ -27,6 +28,7 @@ impl MissionEntity {
             name: self.name.clone(),
             description: self.description.clone(),
             status: self.status.clone(),
+            difficulty: self.difficulty.clone(),
             chief_id: self.chief_id,
             chief_display_name,
             crew_count,
@@ -44,6 +46,7 @@ pub struct AddMissionEntity {
     pub name: String,
     pub status: String,
     pub description: Option<String>,
+    pub difficulty: String,
 }
 
 #[derive(Debug, Clone, AsChangeset)]

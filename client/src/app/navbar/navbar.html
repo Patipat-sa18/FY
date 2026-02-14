@@ -1,23 +1,41 @@
 <mat-toolbar class="my-navbar">
-    <span class="home-btn" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
-        <!-- Logo Removed as per request -->
-        <mat-icon>home</mat-icon>
-    </span>
-    @if(display_name()){
-    <button class="menu-button" routerLink="/missions" routerLinkActive="active">Missions</button>
-    <button class="button" routerLink="/chief" routerLinkActive="active">My Missions</button>
-    }
-
+    <a class="home-btn" routerLink="/" title="Home">
+        <span class="brand-text">AbyssCo</span>
+    </a>
 
     <span class="spacer"></span>
-    @if (display_name()) {
-    <button matButton [matMenuTriggerFor]="menu">
-        <img src="{{avatar_url()}}" alt="user avatar" class="avatar">
-        {{display_name()}}
-    </button>
-    <mat-menu #menu="matMenu">
-        <button mat-menu-item class="menu-button" routerLink="/profile">Profile</button>
-        <button mat-menu-item class="menu-button" (click)="logout()">Log-out</button>
-    </mat-menu>
-    }
+
+    <div class="nav-group">
+        <div class="nav-links">
+            @if(display_name()){
+            <button routerLink="/missions" routerLinkActive="active" title="View all missions">
+                <mat-icon>explore</mat-icon>
+                Missions
+            </button>
+            <button routerLink="/chief" routerLinkActive="active" title="Manage your missions">
+                <mat-icon>dashboard</mat-icon>
+                My Missions
+            </button>
+            }
+        </div>
+
+        <div class="user-section">
+            @if (display_name()) {
+            <div class="user-dropdown-trigger" [matMenuTriggerFor]="menu" title="User Menu">
+                <img [src]="avatar_url()" alt="user avatar" class="avatar">
+                <span>{{display_name()}}</span>
+            </div>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item routerLink="/profile" title="View Profile">
+                    <mat-icon>person</mat-icon>
+                    <span>Profile</span>
+                </button>
+                <button mat-menu-item (click)="logout()" title="Logout">
+                    <mat-icon>logout</mat-icon>
+                    <span>Log-out</span>
+                </button>
+            </mat-menu>
+            }
+        </div>
+    </div>
 </mat-toolbar>

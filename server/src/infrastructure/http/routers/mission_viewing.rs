@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{
     Json, Router,
-    extract::{Path, Query, State},
+    extract::{Extension, Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
     routing::get,
@@ -61,14 +61,32 @@ where
     }
 }
 
+pub async fn get_my_memberships<T>(
+    State(user_case): State<Arc<MissionViewingUseCase<T>>>,
+    Extension(user_id): Extension<i32>,
+) -> impl IntoResponse
+where
+    T: MissionViewingRepository + Send + Sync,
+{
+    match user_case.get_my_memberships(user_id).await {
+        Ok(model) => (StatusCode::OK, Json(model)).into_response(),
+
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+    }
+}
+
 pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     let viewing_repositiory = MissionViewingPostgres::new(Arc::clone(&db_pool));
     let user_case = MissionViewingUseCase::new(Arc::new(viewing_repositiory));
+
+    use crate::infrastructure::http::middlewares::auth::auth;
+    use axum::middleware;
 
     Router::new()
         .route("/{mission_id}", get(get_one))
         .route("/filter", get(get_all))
         .route("/crew/{mission_id}", get(get_crew))
+        .route("/my-memberships", get(get_my_memberships).route_layer(middleware::from_fn(auth)))
         // .route_layer(middleware::from_fn(auth))
         .with_state(Arc::new(user_case))
 }

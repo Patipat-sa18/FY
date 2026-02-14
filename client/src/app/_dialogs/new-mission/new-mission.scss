@@ -54,7 +54,8 @@ mat-dialog-content {
     }
 
     input,
-    textarea {
+    textarea,
+    select {
         width: 100%;
         background: #f8fbff;
         border: 1.5px solid #d0deff;
@@ -64,6 +65,8 @@ mat-dialog-content {
         font-size: 15px;
         transition: all 0.25s ease;
         outline: none;
+        appearance: none;
+        cursor: pointer;
 
         &::placeholder {
             color: #9ab2d6;
@@ -74,6 +77,13 @@ mat-dialog-content {
             background: #ffffff;
             box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
         }
+    }
+
+    select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230066ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 16px;
     }
 
     textarea {

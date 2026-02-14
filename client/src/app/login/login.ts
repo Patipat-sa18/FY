@@ -7,10 +7,11 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { Router } from '@angular/router'
 import { PassportService } from '../_services/passport-service'
+import { MatIconModule } from '@angular/material/icon'
 
 @Component({
   selector: 'app-login',
-  imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [MatCardModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -23,7 +24,7 @@ export class Login {
 
   private displaynameMinLength = 3
 
-  mode: 'login' | ' register' = 'login'
+  mode: 'login' | 'register' = 'login'
   form: FormGroup
 
   errorMsg = {
@@ -54,7 +55,7 @@ export class Login {
   }
 
   toggleMode() {
-    this.mode = this.mode === 'login' ? ' register' : 'login'
+    this.mode = this.mode === 'login' ? 'register' : 'login'
     this.updateForm()
   }
 

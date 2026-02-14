@@ -16,6 +16,8 @@ pub struct MissionModel {
     pub description: Option<String>,
     #[diesel(sql_type = Varchar)]
     pub status: String,
+    #[diesel(sql_type = Varchar)]
+    pub difficulty: String,
     #[diesel(sql_type = Int4)]
     pub chief_id: i32,
     #[diesel(sql_type = Varchar)]
@@ -34,6 +36,7 @@ pub struct MissionModel {
 pub struct AddMissionModel {
     pub name: String,
     pub description: Option<String>,
+    pub difficulty: String,
 }
 
 impl AddMissionModel {
@@ -41,6 +44,7 @@ impl AddMissionModel {
         AddMissionEntity {
             name: self.name.clone(),
             description: self.description.clone(),
+            difficulty: self.difficulty.clone(),
             status: MissionStatuses::Open.to_string(),
             chief_id,
         }

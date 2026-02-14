@@ -15,6 +15,18 @@
             <textarea [(ngModel)]="addMission.description" placeholder="Write mission details..."></textarea>
         </div>
     </div>
+
+    <div class="form-field">
+        <label>Difficulty</label>
+        <div class="input-container">
+            <mat-icon>equalizer</mat-icon>
+            <select [(ngModel)]="addMission.difficulty">
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
+    </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

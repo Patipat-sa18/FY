@@ -45,6 +45,7 @@ SELECT m.id,
         m.name,
         m.description,
         m.status,
+        m.difficulty,
         m.chief_id,
         COALESCE(b.display_name, '') AS chief_display_name,
         COUNT(cm.brawler_id) AS crew_count,
@@ -58,7 +59,7 @@ LEFT JOIN brawlers b ON b.id = m.chief_id
 LEFT JOIN crew_memberships cm ON cm.mission_id = m.id
 WHERE m.deleted_at IS NULL
     AND m.id = $1
-GROUP BY m.id, b.display_name, m.name, m.description, m.status, m.chief_id, m.created_at, m.updated_at
+GROUP BY m.id, b.display_name, m.name, m.description, m.status, m.difficulty, m.chief_id, m.created_at, m.updated_at
 LIMIT 1
         "#;
 
@@ -79,6 +80,7 @@ SELECT m.id,
         m.name,
         m.description,
         m.status,
+        m.difficulty,
         m.chief_id,
         COALESCE(b.display_name, '') AS chief_display_name,
         COUNT(cm.brawler_id) AS crew_count,
@@ -93,7 +95,7 @@ LEFT JOIN crew_memberships cm ON cm.mission_id = m.id
 WHERE m.deleted_at IS NULL
     AND ($1::varchar IS NULL OR m.status = $1)
     AND ($2::varchar IS NULL OR m.name ILIKE $2)
-GROUP BY m.id, b.display_name, m.name, m.description, m.status, m.chief_id, m.created_at, m.updated_at
+GROUP BY m.id, b.display_name, m.name, m.description, m.status, m.difficulty, m.chief_id, m.created_at, m.updated_at
 ORDER BY m.created_at DESC
         "#;
 
@@ -149,5 +151,16 @@ ORDER BY m.created_at DESC
             .get_result::<i64>(&mut conn)?;
 
         Ok(count > 0)
+    }
+
+    async fn get_my_memberships(&self, brawler_id: i32) -> Result<Vec<i32>> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+
+        let mission_ids = crew_memberships::table
+            .select(crew_memberships::mission_id)
+            .filter(crew_memberships::brawler_id.eq(brawler_id))
+            .load::<i32>(&mut conn)?;
+
+        Ok(mission_ids)
     }
 }

@@ -54,7 +54,10 @@ export class ErrorService {
           }
           break
         default:
-          this._snackBar.open('some thing went wrong!!, please try again later', 'ok', this._snackBarConfig)
+          // Don't show generic error for successful requests (parser errors)
+          if (error.status !== 200) {
+            this._snackBar.open('some thing went wrong!!, please try again later', 'ok', this._snackBarConfig)
+          }
           break
       }
     }

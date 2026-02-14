@@ -105,4 +105,25 @@ where
             .await?;
         Ok(())
     }
+
+    pub async fn start(&self, mission_id: i32, chief_id: i32) -> Result<()> {
+        let mission = self.mission_viewing_repository.get_one(mission_id).await?;
+
+        if mission.chief_id != chief_id {
+            return Err(anyhow::anyhow!(
+                "Only the Chief can start the mission!"
+            ));
+        }
+
+        if mission.status != "Open" {
+             return Err(anyhow::anyhow!(
+                "Mission is not in Open status!"
+            ));
+        }
+
+        self.mission_management_repository
+            .start(mission_id)
+            .await?;
+        Ok(())
+    }
 }

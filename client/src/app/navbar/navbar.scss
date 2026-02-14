@@ -4,90 +4,126 @@
 
 .my-navbar {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    background: rgba(10, 20, 40, 0.4);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(10, 20, 40, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     color: white;
-    height: 80px;
+    height: 70px;
     padding: 0 40px;
     position: sticky;
     top: 0;
+    width: 100%;
     z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
 
-    button {
+    .nav-group {
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 25px;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    button:not(.home-btn):not([mat-menu-item]) {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         cursor: pointer;
         border: none;
-        background: none;
-        font-family: inherit;
+        background: rgba(255, 255, 255, 0.03);
+        font-family: 'Outfit', sans-serif;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.6);
         transition: all 0.3s ease;
         text-transform: uppercase;
         letter-spacing: 1px;
+        font-size: 0.8rem;
+        padding: 8px 15px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
 
         mat-icon {
-            margin: 0;
-            margin-right: 0.2em;
-            padding: 0;
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
         }
 
         &:hover {
             color: #00d2ff;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+            background: rgba(0, 210, 255, 0.1);
+            border-color: rgba(0, 210, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        &.active {
+            color: #00d2ff;
+            background: rgba(0, 210, 255, 0.15);
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+            font-weight: 700;
         }
     }
 
     .home-btn {
-        font-size: x-large;
-        margin-right: 20px;
-        color: #00d2ff;
+        text-decoration: none;
         display: flex;
         align-items: center;
-        cursor: pointer;
-        filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.3));
-    }
-
-    button:not(.home-btn) {
-        font-size: 0.95rem;
-        margin-top: 0;
-        padding: 0.5rem 1rem;
-    }
-
-    button.active:not(.home-btn) {
-        color: #00d2ff;
-        position: relative;
-
-        &::after {
-            content: '';
-            position: absolute;
-            bottom: -28px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: #00d2ff;
-            box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
-            border-radius: 2px;
-        }
-    }
-
-    .avatar {
-        margin-right: 5px;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #00d2ff;
-        box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
         transition: transform 0.3s ease;
 
         &:hover {
-            transform: scale(1.1);
+            transform: scale(1.02);
+        }
+
+        .brand-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #00d2ff, #0066ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.4));
+        }
+    }
+
+    .user-section {
+        display: flex;
+        align-items: center;
+
+        .user-dropdown-trigger {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 12px 4px 4px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: #00d2ff;
+            }
+
+            .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid #00d2ff;
+            }
         }
     }
 }

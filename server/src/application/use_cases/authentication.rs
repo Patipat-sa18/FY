@@ -37,4 +37,10 @@ where
         let passport = Passport::new(user.id, user.display_name, user.avatar_url)?;
         Ok(passport)
     }
+
+    pub async fn get_me(&self, user_id: i32) -> Result<Passport> {
+        let user = self.brawler_repository.find_by_id(user_id).await?;
+        let passport = Passport::new(user.id, user.display_name, user.avatar_url)?;
+        Ok(passport)
+    }
 }

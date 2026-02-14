@@ -66,4 +66,19 @@ where
         let missions = self.brawler_repository.get_missions(brawler_id).await?;
         Ok(missions)
     }
+    
+    pub async fn get_profile_stats(
+        &self,
+        brawler_id: i32,
+    ) -> Result<crate::domain::value_objects::profile_stats::ProfileStats> {
+        let stats = self.brawler_repository.get_profile_stats(brawler_id).await?;
+        Ok(stats)
+    }
+
+    pub async fn update_username(&self, brawler_id: i32, new_username: String) -> Result<()> {
+        self.brawler_repository
+            .update_username(brawler_id, new_username)
+            .await?;
+        Ok(())
+    }
 }

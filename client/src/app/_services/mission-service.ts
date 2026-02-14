@@ -67,5 +67,20 @@ export class MissionService {
     return await firstValueFrom(this._http.delete(url, { responseType: 'text' }))
   }
 
+  async start(missionId: number): Promise<string> {
+    const url = this._base_url + `/mission-management/${missionId}/start`
+    return await firstValueFrom(this._http.post(url, {}, { responseType: 'text' }))
+  }
+
+  async leave(missionId: number): Promise<string> {
+    const url = this._base_url + `/crew/leave/${missionId}`
+    return await firstValueFrom(this._http.delete(url, { responseType: 'text' }))
+  }
+
+  async getMyMemberships(): Promise<number[]> {
+    const url = this._base_url + '/view/my-memberships'
+    return await firstValueFrom(this._http.get<number[]>(url))
+  }
+
 
 }

@@ -103,6 +103,11 @@
             </div>
 
             <div class="card-actions">
+                @if(mission.status === 'Open') {
+                <button class="btn primary" (click)="start(mission.id)">
+                    <mat-icon>play_arrow</mat-icon> Start
+                </button>
+                }
                 <button class="btn" (click)="startEdit(mission)">
                     Edit Mission
                 </button>

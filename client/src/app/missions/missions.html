@@ -26,7 +26,10 @@
         <div class="mission-card">
             <div class="card-header">
                 <h3>{{mission.name}}</h3>
-                <div class="status-badge" [class]="mission.status">{{mission.status}}</div>
+                <div class="badges">
+                    <div class="status-badge" [class]="mission.status">{{mission.status}}</div>
+                    <div class="difficulty-badge" [class]="mission.difficulty">{{mission.difficulty}}</div>
+                </div>
             </div>
 
             <div class="card-body">
@@ -55,7 +58,11 @@
 
             @if(isSignin() && mission.chief_id !== userId()){
             <div class="card-actions">
+                @if(isMember(mission.id)) {
+                <button class="warn" (click)="leave(mission.id)">Leave Mission</button>
+                } @else {
                 <button class="primary" (click)="join(mission.id)">Join Mission</button>
+                }
             </div>
             }
         </div>

@@ -1,0 +1,1 @@
+ALTER TABLE missions ADD COLUMN difficulty VARCHAR(50) NOT NULL DEFAULT 'Medium';

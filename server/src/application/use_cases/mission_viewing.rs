@@ -60,4 +60,9 @@ where
 
         Ok(models)
     }
+
+    pub async fn get_my_memberships(&self, brawler_id: i32) -> Result<Vec<i32>> {
+        let result = self.mission_viewing_repository.get_my_memberships(brawler_id).await?;
+        Ok(result)
+    }
 }

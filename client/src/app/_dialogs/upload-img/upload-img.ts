@@ -28,6 +28,12 @@ export class UploadImg {
     const input = event.target as HTMLInputElement
     if (input.files && input.files.length > 0) {
       this.imgFile = input.files[0]
+      const fileSizeMB = this.imgFile.size / (1024 * 1024)
+      if (fileSizeMB > 20) {
+        this.imgFile = undefined
+        this.errorMsg.set("image file is too large (max 20MB)")
+        return
+      }
       const fileType = await fileTypeFromBlob(this.imgFile)
       if (fileType && this.acceptedMimeType.includes(fileType.mime)) {
         const reader = new FileReader()

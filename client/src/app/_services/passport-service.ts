@@ -20,9 +20,16 @@ export class PassportService {
   saveAvatarImgUrl(url: string) {
     let passport = this.data()
     if (passport) {
-      passport.avatar_url = url
+      this.data.set({ ...passport, avatar_url: url })
       this.avatar.set(url)
-      this.data.set(passport)
+      this.savePassportToLocalStorage()
+    }
+  }
+
+  updateDisplayName(name: string) {
+    let passport = this.data()
+    if (passport) {
+      this.data.set({ ...passport, display_name: name })
       this.savePassportToLocalStorage()
     }
   }
@@ -49,7 +56,24 @@ export class PassportService {
   }
 
   constructor() {
-    this.loadPassportFormLocalStorage()
+    if (this.loadPassportFormLocalStorage() === 'not found') {
+      this.checkSession()
+    }
+  }
+
+  async checkSession() {
+    try {
+      const url = this._base_url + '/authentication/me'
+      const passport = await firstValueFrom(this._http.get<Passport>(url))
+      if (passport) {
+        this.data.set(passport)
+        const avatar = getAvatarUrl(passport)
+        this.avatar.set(avatar)
+        this.savePassportToLocalStorage()
+      }
+    } catch (e) {
+      // No active session in cookie
+    }
   }
 
   destroy() {

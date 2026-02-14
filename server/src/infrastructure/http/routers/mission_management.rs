@@ -119,6 +119,35 @@ where
     }
 }
 
+pub async fn start<T1, T2>(
+    State(user_case): State<Arc<MissionManagementUseCase<T1, T2>>>,
+    Extension(user_id): Extension<i32>,
+    Path(mission_id): Path<i32>,
+) -> impl IntoResponse
+where
+    T1: MissionManagementRepository + Send + Sync,
+    T2: MissionViewingRepository + Send + Sync,
+{
+    match user_case.start(mission_id, user_id).await {
+        Ok(_) => (
+            StatusCode::OK,
+            format!("Start mission_id: {} completed!!", mission_id),
+        )
+            .into_response(),
+
+        Err(e) => {
+            let status = if e.to_string().contains("Only the Chief") {
+                StatusCode::FORBIDDEN
+            } else if e.to_string().contains("Mission is not in Open status") {
+                StatusCode::BAD_REQUEST
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            (status, e.to_string()).into_response()
+        }
+    }
+}
+
 pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     let mission_repository = MissionManagementPostgres::new(Arc::clone(&db_pool));
     let viewing_repositiory = MissionViewingPostgres::new(Arc::clone(&db_pool));
@@ -129,6 +158,7 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
         .route("/", post(add))
         .route("/{mission_id}", patch(edit))
         .route("/{mission_id}", delete(remove))
+        .route("/{mission_id}/start", post(start))
         .route_layer(middleware::from_fn(auth))
         .with_state(Arc::new(user_case))
 }

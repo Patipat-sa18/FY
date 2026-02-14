@@ -20,13 +20,39 @@ export class UserService {
     const uploadImg = {
       'base64_string': base64string.split(',')[1]
     }
+
     try {
-      // console.log(uploadImg.base64_string)
+      console.log('Uploading avatar...', { fileName: file.name, fileSize: file.size });
       const cloudinaryImg = await firstValueFrom(this._http.post<CloudinaryImage>(url, uploadImg))
+      console.log('Upload successful:', cloudinaryImg.url);
       this._passport.saveAvatarImgUrl(cloudinaryImg.url)
     } catch (error: any) {
-      return error.error as string
+      console.error('Upload failed:', error);
+      return error.error?.message || error.message || 'Upload failed'
     }
     return null
+  }
+
+  async getProfileStats(): Promise<import('../_models/profile-stats').ProfileStats | null> {
+    const url = this._base_url + '/stats'
+    try {
+      const stats = await firstValueFrom(this._http.get<import('../_models/profile-stats').ProfileStats>(url))
+      return stats
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
+      return null
+    }
+  }
+
+  async updateUsername(newUsername: string): Promise<string | null> {
+    const url = this._base_url + '/username'
+    try {
+      const response = await firstValueFrom(this._http.post(url, { new_username: newUsername }, { responseType: 'text' }))
+      console.log('Username update response:', response)
+      return null
+    } catch (error: any) {
+      console.error('Failed to update username:', error)
+      return error.error || error.message || 'Failed to update username'
+    }
   }
 }

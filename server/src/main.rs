@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use tokio::process::Command;
 
 use server::{
     config::config_loader,
@@ -21,6 +22,26 @@ async fn main() {
     };
 
     info!(".ENV LOADED");
+
+    // Start Frontend if in Local stage
+    let stage = config_loader::get_stage();
+    if stage == server::config::stage::Stage::Local {
+        info!("Starting Frontend Dev Server (npm run dev)...");
+        tokio::spawn(async move {
+            let mut cmd = Command::new("npm");
+            cmd.arg("run").arg("dev").current_dir("../client");
+            
+            match cmd.spawn() {
+                Ok(mut child) => {
+                    let status = child.wait().await;
+                    info!("Frontend process exited with status: {:?}", status);
+                }
+                Err(e) => {
+                    error!("Failed to start frontend: {}", e);
+                }
+            }
+        });
+    }
 
     let postgres_pool = match postgresql_connection::establish_connection(&dotenvy_env.database.url)
     {

@@ -27,8 +27,10 @@ use crate::{
 
 fn static_serve() -> Router {
     let dir = "statics";
-    let index_path = std::env::current_dir().unwrap().join(dir).join("index.html");
-    let service = ServeDir::new(dir).not_found_service(ServeFile::new(index_path));
+    let index_vec = std::env::current_dir().unwrap().join(dir).join("index.html");
+    
+    // Ensure the service handles all routes by falling back to index.html
+    let service = ServeDir::new(dir).not_found_service(ServeFile::new(index_vec));
     Router::new().fallback_service(service)
 }
 
@@ -93,7 +95,11 @@ pub async fn start(config: Arc<DotEnvyConfig>, db_pool: Arc<PgPoolSquad>) -> Res
 
     info!("Server start on port {}", config.server.port);
     
-    let url = format!("http://localhost:{}", config.server.port);
+    let mut url = format!("http://localhost:{}", config.server.port);
+    
+    if crate::config::config_loader::get_stage() == crate::config::stage::Stage::Local {
+        url = "http://localhost:4200".to_string();
+    }
     
     // Spawn a task to open the browser after the server has started
     tokio::spawn(async move {

@@ -15,14 +15,17 @@ use crate::{
         entities::brawlers::{BrawlerEntity, RegisterBrawlerEntity},
         repositories::brawlers::BrawlerRepository,
         value_objects::{
-            base64_img::Base64Img, mission_model::MissionModel, uploaded_img::UploadedImg,
+            base64_img::Base64Img,
+            mission_model::MissionModel,
+            profile_stats::ProfileStats,
+            uploaded_img::UploadedImg,
         },
     },
     infrastructure::{
         cloudinary::{self, UploadImageOptions},
         database::{
             postgresql_connection::PgPoolSquad,
-            schema::{brawlers, crew_memberships},
+            schema::{brawlers, crew_memberships, missions},
         },
         jwt::{
             generate_token,
@@ -118,6 +121,7 @@ SELECT
     missions.name,
     missions.description,
     missions.status,
+    missions.difficulty,
     missions.chief_id,
     brawlers.display_name AS chief_display_name,
     (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
@@ -149,5 +153,76 @@ ORDER BY missions.created_at DESC
         let count = u32::try_from(result)?;
 
         Ok(count)
+    }
+
+    async fn get_profile_stats(&self, brawler_id: i32) -> Result<ProfileStats> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+
+        use crate::domain::value_objects::mission_statuses::MissionStatuses;
+
+        // Count missions created by the user
+        let created_count = missions::table
+            .filter(missions::chief_id.eq(brawler_id))
+            .filter(missions::deleted_at.is_null())
+            .count()
+            .get_result::<i64>(&mut conn)?;
+
+        // Count missions where the user is a crew member
+        let joined_count = crew_memberships::table
+            .filter(crew_memberships::brawler_id.eq(brawler_id))
+            .count()
+            .get_result::<i64>(&mut conn)?;
+
+        // Count missions completed (either created or joined) where status is 'Completed'
+        // This requires checking both missions table (for created) and crew_memberships joined with missions (for joined)
+        
+        // Simpler approach: Count completed missions where user is chief OR user is crew member
+        // But crew_memberships doesn't have status. We need to join.
+        
+        let completed_as_chief = missions::table
+            .filter(missions::chief_id.eq(brawler_id))
+            .filter(missions::status.eq(MissionStatuses::Completed.to_string()))
+            .filter(missions::deleted_at.is_null())
+            .count()
+            .get_result::<i64>(&mut conn)?;
+            
+        let completed_as_crew = crew_memberships::table
+            .inner_join(missions::table)
+            .filter(crew_memberships::brawler_id.eq(brawler_id))
+            .filter(missions::status.eq(MissionStatuses::Completed.to_string()))
+            .filter(missions::deleted_at.is_null())
+            .count()
+            .get_result::<i64>(&mut conn)?;
+            
+        // Note: A chief might also be in crew_memberships depending on implementation. 
+        // If chief is NOT effectively in crew_memberships for their own mission, we sum them.
+        // Assuming chief is separate from crew in this logic based on previous code.
+        
+        Ok(ProfileStats {
+            created_count,
+            joined_count,
+            completed_count: completed_as_chief + completed_as_crew,
+        })
+    }
+
+    async fn update_username(&self, brawler_id: i32, new_username: String) -> Result<()> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+
+        diesel::update(brawlers::table)
+            .filter(brawlers::id.eq(brawler_id))
+            .set(brawlers::display_name.eq(new_username))
+            .execute(&mut conn)?;
+
+        Ok(())
+    }
+
+    async fn find_by_id(&self, brawler_id: i32) -> Result<BrawlerEntity> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+
+        let brawler = brawlers::table
+            .filter(brawlers::id.eq(brawler_id))
+            .first::<BrawlerEntity>(&mut conn)?;
+
+        Ok(brawler)
     }
 }

@@ -1,20 +1,116 @@
 <div class="profile-container">
-    <div class="profile-card">
-        <div class="avatar-section">
-            <div class="avatar-container" (click)="openDialog()">
-                <img [src]="avatar_url()" alt="User Avatar" class="profile-avatar">
-                <div class="avatar-overlay">
-                    <mat-icon>camera_alt</mat-icon>
-                    <span>Change Avatar</span>
+    <div class="profile-content">
+        <!-- Left Column: User Card -->
+        <div class="user-card-col">
+            <div class="profile-card glass-card main-card">
+                <div class="avatar-section">
+                    <div class="avatar-container" (click)="openDialog()">
+                        <img [src]="avatar_url()" alt="User Avatar" class="profile-avatar">
+                        <div class="avatar-overlay">
+                            <mat-icon>camera_alt</mat-icon>
+                            <span>Change</span>
+                        </div>
+                    </div>
+                    <div class="status-indicator online"></div>
+                </div>
+
+                <div class="profile-details">
+                    @if(!isEditing()){
+                    <div class="name-container">
+                        <h1 class="username">{{display_name()}}</h1>
+                        <button (click)="toggleEdit()" class="edit-btn" title="Edit AKA">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </div>
+                    } @else {
+                    <div class="edit-container">
+                        <input [(ngModel)]="newUsername" placeholder="Enter new AKA" class="name-input">
+                        <div class="edit-actions">
+                            <button (click)="saveName()" class="save-btn" title="Save">
+                                <mat-icon>check</mat-icon>
+                            </button>
+                            <button (click)="toggleEdit()" class="cancel-btn" title="Cancel">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    }
+                    <div class="role-badge">Abyss Warrior</div>
+
+                    <div class="bio-section">
+                        <p>"In the heart of the abyss, only the strongest survive. Ready for the next mission."</p>
+                    </div>
+                </div>
+
+                <div class="profile-footer">
+                    <div class="join-date">
+                        <mat-icon>calendar_today</mat-icon>
+                        <span>Joined FEB 2026</span>
+                    </div>
                 </div>
             </div>
-            <div class="status-indicator online"></div>
         </div>
 
-        <div class="profile-details">
-            <h1 class="username">User : OiiO</h1>
-            <div class="accent-bar"></div>
-            <p class="role">Warrior</p>
+        <!-- Right Column: Stats & Achievements -->
+        <div class="stats-col">
+            <div class="section-title">
+                <mat-icon>analytics</mat-icon>
+                <h2>Performance Overview</h2>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon created">
+                        <mat-icon>add_circle</mat-icon>
+                    </div>
+                    <div class="stat-info">
+                        <span class="value">{{stats()?.created_count || 0}}</span>
+                        <span class="label">Missions Created</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon joined">
+                        <mat-icon>group</mat-icon>
+                    </div>
+                    <div class="stat-info">
+                        <span class="value">{{stats()?.joined_count || 0}}</span>
+                        <span class="label">Missions Joined</span>
+                    </div>
+                </div>
+
+                <div class="stat-card glass-card">
+                    <div class="stat-icon completed">
+                        <mat-icon>verified</mat-icon>
+                    </div>
+                    <div class="stat-info">
+                        <span class="value">{{stats()?.completed_count || 0}}</span>
+                        <span class="label">Total Completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <mat-icon>military_tech</mat-icon>
+                <h2>Battle Achievements</h2>
+            </div>
+
+            <div class="achievements-list">
+                <div class="achievement-item glass-card locked">
+                    <mat-icon>lock</mat-icon>
+                    <div class="ach-info">
+                        <h3>First Blood</h3>
+                        <p>Complete your first solo mission</p>
+                    </div>
+                </div>
+                <div class="achievement-item glass-card locked">
+                    <mat-icon>lock</mat-icon>
+                    <div class="ach-info">
+                        <h3>Abyss Veteran</h3>
+                        <p>Join over 50 missions in total</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

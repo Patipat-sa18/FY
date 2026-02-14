@@ -19,10 +19,9 @@ import { MatIconModule } from '@angular/material/icon'
 export class Missions {
   private _mission = inject(MissionService)
   private _passport = inject(PassportService)
-  private _snackBar = inject(MatSnackBar)
 
   filter: MissionFilter = {}
-  
+
   private _missionsSubject = new BehaviorSubject<Mission[]>([])
   readonly missions$ = this._missionsSubject.asObservable()
   isSignin: Signal<boolean>
@@ -31,12 +30,24 @@ export class Missions {
   isLoading = false
   editingId: number | undefined
   editForm: Partial<Mission> = {}
+  myMemberships: number[] = []
 
   constructor() {
     this.isSignin = computed(() => this._passport.data() !== undefined)
     this.userId = computed(() => this._passport.data()?.id)
     this.filter = this._mission.filter
     this.loadMyMission()
+    this.loadMyMemberships()
+  }
+
+  private async loadMyMemberships() {
+    if (this.isSignin()) {
+      try {
+        this.myMemberships = await this._mission.getMyMemberships()
+      } catch (e) {
+        console.error('Failed to load memberships', e)
+      }
+    }
   }
 
   private async loadMyMission() {
@@ -60,16 +71,39 @@ export class Missions {
   async join(missionId: number) {
     try {
       this.isLoading = true
-      const message = await this._mission.join(missionId)
-      // Wait a moment to ensure DB update propagates if needed, gives a "processing" feel
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Optimistic update
+      if (!this.myMemberships.includes(missionId)) {
+        this.myMemberships.push(missionId);
+      }
+
+      await this._mission.join(missionId)
       await this.loadMyMission()
-      this.showNotification('Completed')
+      await this.loadMyMemberships()
+      this.showNotification('Joined Mission')
     } catch (e: any) {
-      // If responseType is text, success might still throw if status != 200, 
-      // but if status is 200 it returns string.
-      // If error, e.error might be the text body.
+      // Rollback on error
+      this.myMemberships = this.myMemberships.filter(id => id !== missionId);
       const errorMessage = e.error?.error || e.error?.message || e.error || e.message || 'An error occurred while joining the mission';
+      this.showNotification(errorMessage)
+    } finally {
+      this.isLoading = false
+    }
+  }
+
+  async leave(missionId: number) {
+    try {
+      this.isLoading = true
+      // Optimistic update
+      this.myMemberships = this.myMemberships.filter(id => id !== missionId);
+
+      await this._mission.leave(missionId)
+      await this.loadMyMission()
+      await this.loadMyMemberships()
+      this.showNotification('Left Mission')
+    } catch (e: any) {
+      // Rollback
+      await this.loadMyMemberships();
+      const errorMessage = e.error?.error || e.error?.message || e.error || e.message || 'An error occurred while leaving the mission';
       this.showNotification(errorMessage)
     } finally {
       this.isLoading = false
@@ -81,6 +115,10 @@ export class Missions {
     setTimeout(() => {
       this.notificationMessage = null
     }, 2000)
+  }
+
+  closeNotification() {
+    this.notificationMessage = null
   }
 
   startEdit(mission: Mission) {
@@ -135,7 +173,7 @@ export class Missions {
     return this.editingId === missionId
   }
 
-  closeNotification() {
-    this.notificationMessage = null
+  isMember(missionId: number): boolean {
+    return this.myMemberships.includes(missionId)
   }
 }

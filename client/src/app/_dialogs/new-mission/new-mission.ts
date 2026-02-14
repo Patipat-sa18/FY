@@ -14,7 +14,8 @@ import { FormsModule } from '@angular/forms'
 export class NewMission {
   addMission: AddMission = {
     name: '',
-    description: ''
+    description: '',
+    difficulty: 'Medium'
   }
   private readonly _dialogRef = inject(MatDialogRef<NewMission>)
 
@@ -26,7 +27,8 @@ export class NewMission {
   private clean(addMission: AddMission): AddMission {
     return {
       name: addMission.name.trim() || 'untitled',
-      description: addMission.description?.trim() || undefined
+      description: addMission.description?.trim() || undefined,
+      difficulty: addMission.difficulty
     }
   }
 }

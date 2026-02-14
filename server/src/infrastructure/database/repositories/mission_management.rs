@@ -51,10 +51,21 @@ impl MissionManagementRepository for MissionManagementPostgres {
             .filter(missions::id.eq(mission_id))
             .filter(missions::deleted_at.is_null())
             .filter(missions::status.eq(MissionStatuses::Open.to_string()))
-            .set((
-                missions::deleted_at.eq(now),
-                missions::chief_id.eq(chief_id),
-            ))
+            .filter(missions::chief_id.eq(chief_id))
+            .set(missions::deleted_at.eq(now))
+            .execute(&mut conn)?;
+
+        Ok(())
+    }
+
+    async fn start(&self, mission_id: i32) -> Result<()> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+
+        update(missions::table)
+            .filter(missions::id.eq(mission_id))
+            .filter(missions::deleted_at.is_null())
+            .filter(missions::status.eq(MissionStatuses::Open.to_string()))
+            .set(missions::status.eq(MissionStatuses::InProgress.to_string()))
             .execute(&mut conn)?;
 
         Ok(())

@@ -2,10 +2,14 @@ use std::sync::Arc;
 
 use axum::{
     Extension, Json, Router,
-    extract::State,
+    extract::{State},
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
+};
+use axum_extra::extract::{
+    CookieJar,
+    cookie::{Cookie, SameSite},
 };
 
 use crate::{
@@ -27,11 +31,13 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     let protected_routes = Router::new()
         .route("/avatar", post(upload_avatar))
         .route("/my-missions", get(get_missions))
+        .route("/stats", get(get_profile_stats))
+        .route("/username", post(update_username))
         .route_layer(axum::middleware::from_fn(auth));
 
     Router::new()
         .merge(protected_routes)
-        .route("/register", post(register))
+        .route("/register", post(register::<BrawlerPostgres>))
         .with_state(Arc::new(user_case))
 }
 
@@ -50,13 +56,22 @@ where
 
 pub async fn register<T>(
     State(user_case): State<Arc<BrawlersUseCase<T>>>,
+    jar: CookieJar,
     Json(model): Json<RegisterBrawlerModel>,
 ) -> impl IntoResponse
 where
     T: BrawlerRepository + Send + Sync,
 {
     match user_case.register(model).await {
-        Ok(passport) => (StatusCode::CREATED, Json(passport)).into_response(),
+        Ok(passport) => {
+            let cookie = Cookie::build(("token", passport.token.clone()))
+                .path("/")
+                .same_site(SameSite::Lax)
+                .http_only(false)
+                .build();
+
+            (jar.add(cookie), (StatusCode::CREATED, Json(passport))).into_response()
+        }
 
         Err(e) => {
             if e.to_string().contains("Username already exists") {
@@ -81,7 +96,42 @@ where
         .await
     {
         Ok(upload_img) => (StatusCode::OK, Json(upload_img)).into_response(),
-
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+    }
+}
+
+pub async fn get_profile_stats<T>(
+    State(brawlers_use_case): State<Arc<BrawlersUseCase<T>>>,
+    Extension(brawler_id): Extension<i32>,
+) -> impl IntoResponse
+where
+    T: BrawlerRepository + Send + Sync,
+{
+    match brawlers_use_case.get_profile_stats(brawler_id).await {
+        Ok(stats) => (StatusCode::OK, Json(stats)).into_response(),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+    }
+}
+
+pub async fn update_username<T>(
+    State(brawlers_use_case): State<Arc<BrawlersUseCase<T>>>,
+    Extension(brawler_id): Extension<i32>,
+    Json(model): Json<crate::domain::value_objects::brawler_model::UpdateUsernameModel>,
+) -> impl IntoResponse
+where
+    T: BrawlerRepository + Send + Sync,
+{
+    match brawlers_use_case
+        .update_username(brawler_id, model.new_username)
+        .await
+    {
+        Ok(_) => (StatusCode::OK, "Username updated successfully").into_response(),
+        Err(e) => {
+            if e.to_string().contains("Username already exists") {
+                (StatusCode::CONFLICT, e.to_string()).into_response()
+            } else {
+                (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+            }
+        }
     }
 }
