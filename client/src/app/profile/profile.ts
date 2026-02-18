@@ -6,12 +6,11 @@ import { UploadImg } from '../_dialogs/upload-img/upload-img'
 import { UserService } from '../_services/user-service'
 import { MatIconModule } from '@angular/material/icon'
 import { ProfileStats } from '../_models/profile-stats'
-import { AsyncPipe } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 
 @Component({
   selector: 'app-profile',
-  imports: [MatIconModule, AsyncPipe, FormsModule],
+  imports: [MatIconModule, FormsModule],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
@@ -61,11 +60,29 @@ export class Profile {
 
   openDialog() {
     const ref = this._dialog.open(UploadImg)
-    ref.afterClosed().subscribe(async file => {
-      if (file) {
-        const error = await this._user.uploadAvatarImg(file)
-        if (error)
-          console.error(error)
+    ref.afterClosed().subscribe(async result => {
+      console.log('UploadImg dialog result:', result)
+      if (result) {
+        let error: string | null = null
+        // Robust check for File or Blob-like object
+        const isFile = (typeof result === 'object' && 'name' in result && 'size' in result);
+
+        if (isFile) {
+          console.log('Detected result as File object, uploading...', (result as any).name)
+          error = await this._user.uploadAvatarImg(result as File)
+        } else if (typeof result === 'string') {
+          console.log('Detected result as URL string, updating...', result)
+          error = await this._user.updateAvatarUrl(result)
+        } else {
+          console.warn('Unknown result type from dialog:', result)
+        }
+
+        if (error) {
+          console.error('Profile update failed:', error)
+          alert('Failed to update profile picture: ' + error)
+        } else {
+          console.log('Profile picture updated successfully')
+        }
       }
     })
   }

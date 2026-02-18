@@ -72,6 +72,16 @@ export class MissionService {
     return await firstValueFrom(this._http.post(url, {}, { responseType: 'text' }))
   }
 
+  async complete(missionId: number): Promise<string> {
+    const url = this._base_url + `/mission/to-completed/${missionId}`
+    return await firstValueFrom(this._http.patch(url, {}, { responseType: 'text' }))
+  }
+
+  async fail(missionId: number): Promise<string> {
+    const url = this._base_url + `/mission/to-failed/${missionId}`
+    return await firstValueFrom(this._http.patch(url, {}, { responseType: 'text' }))
+  }
+
   async leave(missionId: number): Promise<string> {
     const url = this._base_url + `/crew/leave/${missionId}`
     return await firstValueFrom(this._http.delete(url, { responseType: 'text' }))

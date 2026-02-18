@@ -33,6 +33,7 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
         .route("/my-missions", get(get_missions))
         .route("/stats", get(get_profile_stats))
         .route("/username", post(update_username))
+        .route("/avatar-url", post(update_avatar_url))
         .route_layer(axum::middleware::from_fn(auth));
 
     Router::new()
@@ -95,8 +96,14 @@ where
         .upload_base64img(user_id, model.base64_string)
         .await
     {
-        Ok(upload_img) => (StatusCode::OK, Json(upload_img)).into_response(),
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Ok(upload_img) => {
+            tracing::info!("Avatar upload success for user {}: {}", user_id, upload_img.url);
+            (StatusCode::OK, Json(upload_img)).into_response()
+        },
+        Err(e) => {
+            tracing::error!("Avatar upload failed for user {}: {}", user_id, e);
+            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+        },
     }
 }
 
@@ -135,3 +142,27 @@ where
         }
     }
 }
+
+pub async fn update_avatar_url<T>(
+    State(brawlers_use_case): State<Arc<BrawlersUseCase<T>>>,
+    Extension(brawler_id): Extension<i32>,
+    Json(model): Json<crate::domain::value_objects::brawler_model::UpdateAvatarUrlModel>,
+) -> impl IntoResponse
+where
+    T: BrawlerRepository + Send + Sync,
+{
+    match brawlers_use_case
+        .update_avatar_url(brawler_id, model.url.clone())
+        .await
+    {
+        Ok(_) => {
+            tracing::info!("Avatar URL update success for user {}: {}", brawler_id, model.url);
+            (StatusCode::OK, "Avatar URL updated successfully").into_response()
+        },
+        Err(e) => {
+            tracing::error!("Avatar URL update failed for user {}: {}", brawler_id, e);
+            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+        },
+    }
+}
+

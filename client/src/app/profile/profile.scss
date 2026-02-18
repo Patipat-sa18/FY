@@ -1,4 +1,4 @@
-@import '../app.scss';
+@use '../app.scss' as *;
 
 .profile-container {
     min-height: calc(100vh - 80px);

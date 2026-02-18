@@ -1,23 +1,57 @@
-<h2 mat-dialog-title>Upload Image</h2>
+<div class="dialog-header">
+    <h2 mat-dialog-title>Update Avatar</h2>
+    <div class="mode-toggle">
+        <button [class.active]="uploadMode() === 'file'" (click)="setMode('file')">Upload</button>
+        <button [class.active]="uploadMode() === 'url'" (click)="setMode('url')">URL</button>
+    </div>
+</div>
 <mat-dialog-content>
     <div class="content-container">
-        @if (imgPreview()) {
-        <div class="image-preview">
-            <img [src]="imgPreview()" alt="upload image">
+        <div class="image-preview" (click)="uploadMode() === 'file' && filePicker.click()"
+            [class.has-image]="imgPreview()">
+            @if (imgPreview()) {
+            <img [src]="imgPreview()" alt="upload image" (error)="errorMsg.set('Invalid image URL')">
+            <div class="preview-overlay" (click)="uploadMode() === 'file' ? filePicker.click() : null">
+                <mat-icon>edit</mat-icon>
+                <span>Change Image</span>
+            </div>
+            } @else {
+            <div class="upload-placeholder">
+                @if (uploadMode() === 'file') {
+                <mat-icon>cloud_upload</mat-icon>
+                <span>Click to choose from your device</span>
+                } @else {
+                <mat-icon>link</mat-icon>
+                <span>Paste image URL here</span>
+                }
+            </div>
+            }
+        </div>
+
+        @if (uploadMode() === 'url') {
+        <div class="url-input-container">
+            <input type="text" [ngModel]="urlInput()" (ngModelChange)="onUrlChange($event)"
+                placeholder="https://example.com/image.jpg" class="glass-input">
         </div>
         }
-        @if (imgFile) {
-        <p>{{imgFile.name}}</p>
-        }
-        @if (errorMsg()) {
-        <p class="error-msg">{{errorMsg()}}</p>
-        }
+
+        <div class="file-info">
+            @if (imgFile) {
+            <p class="file-name">{{imgFile.name}}</p>
+            }
+            @if (errorMsg()) {
+            <p class="error-msg">{{errorMsg()}}</p>
+            }
+        </div>
     </div>
 
     <input type="file" #filePicker (change)="onImgPicked($event)" accept=".jpg, .png">
 
     <mat-dialog-actions>
-        <button matButton (click)="filePicker.click()">Pick Image</button>
-        <button matButton (click)="onSubmit()" [disabled]="!imgFile">Upload</button>
+        <button matButton (click)="_dialogRef.close()">Cancel</button>
+        <button matButton class="primary-btn" (click)="onSubmit()"
+            [disabled]="uploadMode() === 'file' ? !imgFile : !urlInput()">
+            Confirm
+        </button>
     </mat-dialog-actions>
 </mat-dialog-content>

@@ -1,4 +1,4 @@
-@import '../app.scss';
+@use '../app.scss' as *;
 
 .page-container {
     display: flex;
@@ -16,24 +16,22 @@
     animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
 
     mat-card {
-        background: rgba(10, 20, 40, 0.4) !important;
+        background: rgba(10, 20, 40, 0.8) !important; // Increased opacity for better text contrast
         backdrop-filter: blur(30px) saturate(180%);
         -webkit-backdrop-filter: blur(30px) saturate(180%);
-        border: 1px solid rgba(0, 210, 255, 0.3);
+        border: 1px solid rgba(0, 210, 255, 0.4);
         border-radius: 48px;
         padding: 4.5rem 2.5rem;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6),
-            0 0 40px rgba(0, 210, 255, 0.2);
+        box-shadow: none !important; // Removed shadow as requested
         color: white;
         text-align: center;
         overflow: hidden;
         position: relative;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.3s ease;
 
         &:hover {
             transform: translateY(-8px);
-            box-shadow: 0 50px 120px rgba(0, 0, 0, 0.7),
-                0 0 60px rgba(0, 210, 255, 0.3);
+            box-shadow: none !important;
         }
 
         &::before {
@@ -61,15 +59,16 @@
             mat-card-title {
                 h3 {
                     margin: 0;
-                    font-size: 2.8rem;
-                    letter-spacing: 12px;
+                    font-size: 3.2rem;
+                    letter-spacing: 2px; // Reduced for clarity
                     text-transform: uppercase;
-                    background: linear-gradient(to bottom, #ffffff 0%, #00d2ff 50%, #0066ff 100%);
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.4));
-                    font-family: 'Outfit', sans-serif;
+                    color: #00d2ff !important; // Solid color for maximum sharpness
+                    background: none !important;
+                    -webkit-background-clip: initial !important;
+                    background-clip: initial !important;
+                    -webkit-text-fill-color: initial !important;
+                    filter: none !important; // Removed all fuzzy effects
+                    font-family: 'Outfit', sans-serif !important;
                     font-weight: 900;
                     animation: titlePulse 3s ease-in-out infinite;
                 }
@@ -114,21 +113,26 @@
                 box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
             }
 
-            .mat-mdc-form-field-label {
-                color: rgba(200, 200, 200, 0.8) !important;
-                font-weight: 600;
-                letter-spacing: 1px;
-            }
-
             input {
                 color: #ffffff !important;
                 caret-color: $primary-color !important;
-                font-weight: 400;
-                font-size: 1.1rem;
+                font-weight: 500 !important;
+                font-size: 1.1rem !important;
+                letter-spacing: 0.5px !important;
+                font-family: 'Outfit', sans-serif !important;
 
                 &::placeholder {
-                    color: rgba(255, 255, 255, 0.3) !important;
+                    color: rgba(255, 255, 255, 0.4) !important;
+                    font-weight: 400 !important;
+                    font-family: 'Outfit', sans-serif !important;
                 }
+            }
+
+            .mat-mdc-form-field-label {
+                color: rgba(200, 200, 200, 0.8) !important;
+                font-weight: 600 !important;
+                letter-spacing: 1px !important;
+                font-family: 'Outfit', sans-serif !important;
             }
 
             mat-icon {
@@ -139,19 +143,20 @@
     }
 
     .login-button {
-        background: linear-gradient(135deg, $primary-color 0%, #0066ff 100%);
-        color: #ffffff;
+        background: #00d2ff !important;
+        color: #050a14 !important;
         border: none;
-        padding: 1.4rem;
+        padding: 1.2rem;
         border-radius: 12px;
-        font-weight: 800;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-        letter-spacing: 4px;
+        font-weight: 900 !important;
+        font-size: 1.4rem !important; // Slightly larger for clarity
+        text-transform: uppercase !important;
+        letter-spacing: 2px !important;
+        font-family: 'Outfit', sans-serif !important;
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.3s ease;
         margin-top: 1.5rem;
-        box-shadow: 0 15px 40px rgba(0, 210, 255, 0.3);
+        box-shadow: none !important; // Removed shadow
         position: relative;
         overflow: hidden;
 
@@ -240,18 +245,23 @@
             letter-spacing: 1px;
 
             span {
-                color: $primary-color;
-                font-weight: 700;
+                color: $primary-color !important;
+                font-weight: 900 !important;
                 cursor: pointer;
-                transition: all 0.3s;
+                transition: all 0.2s ease;
                 margin-left: 0.5rem;
                 padding-bottom: 2px;
-                border-bottom: 2px solid rgba(0, 210, 255, 0.2);
+                border-bottom: 2px solid rgba(0, 210, 255, 0.5) !important;
+                text-transform: uppercase !important;
+                font-size: 0.9rem !important;
+                letter-spacing: 1px !important;
+                font-family: 'Outfit', sans-serif !important;
 
                 &:hover {
-                    color: #ffffff;
-                    border-bottom-color: #ffffff;
-                    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+                    color: #ffffff !important;
+                    border-bottom-color: #ffffff !important;
+                    text-shadow: none !important;
+                    transform: none !important;
                 }
             }
         }

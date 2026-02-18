@@ -90,6 +90,57 @@ export class Missions {
     }
   }
 
+  async start(missionId: number) {
+    if (confirm('Are you sure you want to start this mission?')) {
+      try {
+        this.isLoading = true
+        await this._mission.start(missionId)
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await this.loadMyMission()
+        this.showNotification('Mission Started')
+      } catch (e: any) {
+        const errorMessage = e.error?.error || e.error?.message || e.error || e.message || 'Error starting mission';
+        this.showNotification(errorMessage)
+      } finally {
+        this.isLoading = false
+      }
+    }
+  }
+
+  async complete(missionId: number) {
+    if (confirm('Are you sure you want to complete this mission?')) {
+      try {
+        this.isLoading = true
+        await this._mission.complete(missionId)
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await this.loadMyMission()
+        this.showNotification('Mission Completed')
+      } catch (e: any) {
+        const errorMessage = e.error?.error || e.error?.message || e.error || e.message || 'Error completing mission';
+        this.showNotification(errorMessage)
+      } finally {
+        this.isLoading = false
+      }
+    }
+  }
+
+  async fail(missionId: number) {
+    if (confirm('Are you sure you want to fail this mission?')) {
+      try {
+        this.isLoading = true
+        await this._mission.fail(missionId)
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await this.loadMyMission()
+        this.showNotification('Mission Failed')
+      } catch (e: any) {
+        const errorMessage = e.error?.error || e.error?.message || e.error || e.message || 'Error failing mission';
+        this.showNotification(errorMessage)
+      } finally {
+        this.isLoading = false
+      }
+    }
+  }
+
   async leave(missionId: number) {
     try {
       this.isLoading = true

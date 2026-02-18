@@ -108,6 +108,14 @@
                     <mat-icon>play_arrow</mat-icon> Start
                 </button>
                 }
+                @if(mission.status === 'InProgress') {
+                <button class="btn primary" (click)="complete(mission.id)">
+                    <mat-icon>check_circle</mat-icon> Complete
+                </button>
+                <button class="btn warn" (click)="fail(mission.id)">
+                    <mat-icon>error</mat-icon> Fail
+                </button>
+                }
                 <button class="btn" (click)="startEdit(mission)">
                     Edit Mission
                 </button>

@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable, signal } from '@angular/core'
 import { environment } from '../../environments/environment' ///
 import { LoginModel, Passport, RegisterModel } from '../_models/passport'
-import { firstValueFrom } from 'rxjs'
-import { H } from '@angular/cdk/keycodes'
+import { catchError, firstValueFrom, of, timeout } from 'rxjs'
 import { getAvatarUrl } from '../_helpers/util'
 
 @Injectable({
@@ -39,10 +38,15 @@ export class PassportService {
     if (!jsonString) return 'not found'
     try {
       const passport = JSON.parse(jsonString) as Passport
+      if (!passport || !passport.token) {
+        throw new Error('Invalid passport data')
+      }
       this.data.set(passport)
       const avatar = getAvatarUrl(passport)
       this.avatar.set(avatar)
     } catch (error) {
+      console.error('Failed to parse passport from local storage:', error)
+      this.destroy() // Clear corrupted data
       return `${error}`
     }
     return null
@@ -64,7 +68,14 @@ export class PassportService {
   async checkSession() {
     try {
       const url = this._base_url + '/authentication/me'
-      const passport = await firstValueFrom(this._http.get<Passport>(url))
+      // Add a 5 second timeout to the session check
+      const passport = await firstValueFrom(
+        this._http.get<Passport>(url).pipe(
+          timeout(5000),
+          catchError(() => of(null))
+        )
+      )
+
       if (passport) {
         this.data.set(passport)
         const avatar = getAvatarUrl(passport)
@@ -72,7 +83,8 @@ export class PassportService {
         this.savePassportToLocalStorage()
       }
     } catch (e) {
-      // No active session in cookie
+      // No active session in cookie or server unreachable
+      console.warn('Session check failed:', e)
     }
   }
 
@@ -102,6 +114,7 @@ export class PassportService {
       const result = this._http.post<Passport>(api_url, model)
       const passport = await firstValueFrom(result)
       this.data.set(passport)
+      this.avatar.set(getAvatarUrl(passport)) // Sync avatar immediately
       this.savePassportToLocalStorage()
       return null
     } catch (error: any) {

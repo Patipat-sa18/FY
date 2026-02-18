@@ -6,18 +6,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(10, 20, 40, 0.8);
+    background: rgba(10, 20, 40, 0.7);
     backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.2);
     color: white;
     height: 70px;
     padding: 0 40px;
-    position: sticky;
-    top: 0;
-    width: 100%;
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 1400px;
     z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 210, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 20px;
 
     .nav-group {
         display: flex;

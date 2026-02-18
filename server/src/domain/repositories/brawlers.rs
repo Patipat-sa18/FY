@@ -28,5 +28,6 @@ pub trait BrawlerRepository {
     async fn crew_counting(&self, mission_id: i32) -> Result<u32>;
     async fn get_profile_stats(&self, brawler_id: i32) -> Result<ProfileStats>;
     async fn update_username(&self, brawler_id: i32, new_username: String) -> Result<()>;
+    async fn update_avatar_url(&self, brawler_id: i32, url: String) -> Result<()>;
     async fn find_by_id(&self, brawler_id: i32) -> Result<BrawlerEntity>;
 }

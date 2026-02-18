@@ -47,23 +47,29 @@ impl BrawlerPostgres {
 #[async_trait]
 impl BrawlerRepository for BrawlerPostgres {
     async fn register(&self, register_brawler_entity: RegisterBrawlerEntity) -> Result<Passport> {
-        let mut connection = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        let user_id = match insert_into(brawlers::table)
-            .values(&register_brawler_entity)
-            .returning(brawlers::id)
-            .get_result::<i32>(&mut connection)
-        {
-            std::result::Result::Ok(id) => id,
-            Err(Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => {
-                anyhow::bail!("Username already exists");
-            }
-            Err(e) => return Err(e.into()),
-        };
+        let (user_id, display_name) = tokio::task::spawn_blocking(move || -> Result<(i32, String)> {
+            let mut connection = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            let display_name = register_brawler_entity.display_name.clone();
+            
+            let id = match insert_into(brawlers::table)
+                .values(&register_brawler_entity)
+                .returning(brawlers::id)
+                .get_result::<i32>(&mut connection)
+            {
+                std::result::Result::Ok(id) => id,
+                Err(Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => {
+                    return Err(anyhow::anyhow!("Username already exists"));
+                }
+                Err(e) => return Err(e.into()),
+            };
+            
+            Ok((id, display_name))
+        })
+        .await??;
 
-        let display_name = register_brawler_entity.display_name;
-
-        let jwt_env = get_jwt_env()?;
+        let jwt_env = tokio::task::spawn_blocking(get_jwt_env).await??;
         let claims = Claims {
             sub: user_id.to_string(),
             exp: (Utc::now() + Duration::days(jwt_env.ttl)).timestamp() as usize,
@@ -79,12 +85,17 @@ impl BrawlerRepository for BrawlerPostgres {
     }
 
     async fn find_by_username(&self, username: String) -> Result<BrawlerEntity> {
-        let mut connection = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        let result = brawlers::table
-            .filter(brawlers::username.eq(username))
-            .select(BrawlerEntity::as_select())
-            .first::<BrawlerEntity>(&mut connection)?;
+        let result = tokio::task::spawn_blocking(move || -> Result<BrawlerEntity> {
+            let mut connection = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            brawlers::table
+                .filter(brawlers::username.eq(username))
+                .select(BrawlerEntity::as_select())
+                .first::<BrawlerEntity>(&mut connection)
+                .map_err(|e| anyhow::anyhow!(e))
+        })
+        .await??;
 
         Ok(result)
     }
@@ -111,44 +122,54 @@ impl BrawlerRepository for BrawlerPostgres {
     }
 
     async fn get_missions(&self, brawler_id: i32) -> Result<Vec<MissionModel>> {
-        let mut conn = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        // Use a raw SQL query to select the MissionModel fields including
-        // the chief's display name and the crew count.
-        let sql = r#"
-SELECT
-    missions.id,
-    missions.name,
-    missions.description,
-    missions.status,
-    missions.difficulty,
-    missions.chief_id,
-    brawlers.display_name AS chief_display_name,
-    (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
-    missions.max_crew,
-    missions.created_at,
-    missions.updated_at
-FROM missions
-LEFT JOIN brawlers ON brawlers.id = missions.chief_id
-WHERE missions.deleted_at IS NULL
-    AND missions.chief_id = $1
-ORDER BY missions.created_at DESC
-        "#;
+        let results = tokio::task::spawn_blocking(move || -> Result<Vec<MissionModel>> {
+            let mut conn = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            // Use a raw SQL query to select the MissionModel fields including
+            // the chief's display name and the crew count.
+            let sql = r#"
+    SELECT
+        missions.id,
+        missions.name,
+        missions.description,
+        missions.status,
+        missions.difficulty,
+        missions.chief_id,
+        brawlers.display_name AS chief_display_name,
+        (SELECT COUNT(*) FROM crew_memberships WHERE crew_memberships.mission_id = missions.id) AS crew_count,
+        missions.max_crew,
+        missions.created_at,
+        missions.updated_at
+    FROM missions
+    LEFT JOIN brawlers ON brawlers.id = missions.chief_id
+    WHERE missions.deleted_at IS NULL
+        AND missions.chief_id = $1
+    ORDER BY missions.created_at DESC
+            "#;
 
-        let results = diesel::sql_query(sql)
-            .bind::<diesel::sql_types::Int4, _>(brawler_id)
-            .load::<MissionModel>(&mut conn)?;
+            diesel::sql_query(sql)
+                .bind::<diesel::sql_types::Int4, _>(brawler_id)
+                .load::<MissionModel>(&mut conn)
+                .map_err(|e| anyhow::anyhow!(e))
+        })
+        .await??;
 
         Ok(results)
     }
 
     async fn crew_counting(&self, mission_id: i32) -> Result<u32> {
-        let mut conn = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        let result = crew_memberships::table
-            .filter(crew_memberships::mission_id.eq(mission_id))
-            .count()
-            .first::<i64>(&mut conn)?;
+        let result = tokio::task::spawn_blocking(move || -> Result<i64> {
+            let mut conn = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            crew_memberships::table
+                .filter(crew_memberships::mission_id.eq(mission_id))
+                .count()
+                .first::<i64>(&mut conn)
+                .map_err(|e| anyhow::anyhow!(e))
+        })
+        .await??;
 
         let count = u32::try_from(result)?;
 
@@ -156,72 +177,94 @@ ORDER BY missions.created_at DESC
     }
 
     async fn get_profile_stats(&self, brawler_id: i32) -> Result<ProfileStats> {
-        let mut conn = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        use crate::domain::value_objects::mission_statuses::MissionStatuses;
+        let stats = tokio::task::spawn_blocking(move || -> Result<ProfileStats> {
+            let mut conn = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            use crate::domain::value_objects::mission_statuses::MissionStatuses;
 
-        // Count missions created by the user
-        let created_count = missions::table
-            .filter(missions::chief_id.eq(brawler_id))
-            .filter(missions::deleted_at.is_null())
-            .count()
-            .get_result::<i64>(&mut conn)?;
+            // Count missions created by the user
+            let created_count = missions::table
+                .filter(missions::chief_id.eq(brawler_id))
+                .filter(missions::deleted_at.is_null())
+                .count()
+                .get_result::<i64>(&mut conn)?;
 
-        // Count missions where the user is a crew member
-        let joined_count = crew_memberships::table
-            .filter(crew_memberships::brawler_id.eq(brawler_id))
-            .count()
-            .get_result::<i64>(&mut conn)?;
+            // Count missions where the user is a crew member
+            let joined_count = crew_memberships::table
+                .filter(crew_memberships::brawler_id.eq(brawler_id))
+                .count()
+                .get_result::<i64>(&mut conn)?;
 
-        // Count missions completed (either created or joined) where status is 'Completed'
-        // This requires checking both missions table (for created) and crew_memberships joined with missions (for joined)
-        
-        // Simpler approach: Count completed missions where user is chief OR user is crew member
-        // But crew_memberships doesn't have status. We need to join.
-        
-        let completed_as_chief = missions::table
-            .filter(missions::chief_id.eq(brawler_id))
-            .filter(missions::status.eq(MissionStatuses::Completed.to_string()))
-            .filter(missions::deleted_at.is_null())
-            .count()
-            .get_result::<i64>(&mut conn)?;
-            
-        let completed_as_crew = crew_memberships::table
-            .inner_join(missions::table)
-            .filter(crew_memberships::brawler_id.eq(brawler_id))
-            .filter(missions::status.eq(MissionStatuses::Completed.to_string()))
-            .filter(missions::deleted_at.is_null())
-            .count()
-            .get_result::<i64>(&mut conn)?;
-            
-        // Note: A chief might also be in crew_memberships depending on implementation. 
-        // If chief is NOT effectively in crew_memberships for their own mission, we sum them.
-        // Assuming chief is separate from crew in this logic based on previous code.
-        
-        Ok(ProfileStats {
-            created_count,
-            joined_count,
-            completed_count: completed_as_chief + completed_as_crew,
+            let completed_as_chief = missions::table
+                .filter(missions::chief_id.eq(brawler_id))
+                .filter(missions::status.eq(MissionStatuses::Completed.to_string()))
+                .filter(missions::deleted_at.is_null())
+                .count()
+                .get_result::<i64>(&mut conn)?;
+
+            let completed_as_crew = crew_memberships::table
+                .inner_join(missions::table)
+                .filter(crew_memberships::brawler_id.eq(brawler_id))
+                .filter(missions::status.eq(MissionStatuses::Completed.to_string()))
+                .filter(missions::deleted_at.is_null())
+                .count()
+                .get_result::<i64>(&mut conn)?;
+
+            Ok(ProfileStats {
+                created_count,
+                joined_count,
+                completed_count: completed_as_chief + completed_as_crew,
+            })
         })
+        .await??;
+
+        Ok(stats)
     }
 
     async fn update_username(&self, brawler_id: i32, new_username: String) -> Result<()> {
-        let mut conn = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        diesel::update(brawlers::table)
-            .filter(brawlers::id.eq(brawler_id))
-            .set(brawlers::display_name.eq(new_username))
-            .execute(&mut conn)?;
+        tokio::task::spawn_blocking(move || -> Result<()> {
+            let mut conn = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            diesel::update(brawlers::table)
+                .filter(brawlers::id.eq(brawler_id))
+                .set(brawlers::display_name.eq(new_username))
+                .execute(&mut conn)?;
+            Ok(())
+        })
+        .await??;
+
+        Ok(())
+    }
+
+    async fn update_avatar_url(&self, brawler_id: i32, url: String) -> Result<()> {
+        let pool = Arc::clone(&self.db_pool);
+
+        tokio::task::spawn_blocking(move || -> Result<()> {
+            let mut conn = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            diesel::update(brawlers::table)
+                .filter(brawlers::id.eq(brawler_id))
+                .set(brawlers::avatar_url.eq(url))
+                .execute(&mut conn)?;
+            Ok(())
+        })
+        .await??;
 
         Ok(())
     }
 
     async fn find_by_id(&self, brawler_id: i32) -> Result<BrawlerEntity> {
-        let mut conn = Arc::clone(&self.db_pool).get()?;
+        let pool = Arc::clone(&self.db_pool);
 
-        let brawler = brawlers::table
-            .filter(brawlers::id.eq(brawler_id))
-            .first::<BrawlerEntity>(&mut conn)?;
+        let brawler = tokio::task::spawn_blocking(move || -> Result<BrawlerEntity> {
+            let mut conn = pool.get().map_err(|e| anyhow::anyhow!(e))?;
+            brawlers::table
+                .filter(brawlers::id.eq(brawler_id))
+                .first::<BrawlerEntity>(&mut conn)
+                .map_err(|e| anyhow::anyhow!(e))
+        })
+        .await??;
 
         Ok(brawler)
     }

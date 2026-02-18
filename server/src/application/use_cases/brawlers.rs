@@ -81,4 +81,9 @@ where
             .await?;
         Ok(())
     }
+
+    pub async fn update_avatar_url(&self, brawler_id: i32, url: String) -> Result<()> {
+        self.brawler_repository.update_avatar_url(brawler_id, url).await?;
+        Ok(())
+    }
 }

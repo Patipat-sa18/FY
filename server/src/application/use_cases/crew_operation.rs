@@ -30,11 +30,6 @@ where
     }
 
     pub async fn join(&self, mission_id: i32, brawler_id: i32) -> Result<()> {
-        let max_crew_per_mission = std::env::var("MAX_CREW_PER_MISSION")
-            .unwrap_or_else(|_| "5".to_string())
-            .parse()
-            .unwrap_or(5);
-
         let mission = self.mission_viewing_repository.get_one(mission_id).await?;
 
         if mission.chief_id == brawler_id {
@@ -51,18 +46,11 @@ where
             return Err(anyhow::anyhow!("You have already joined this mission!!"));
         }
 
-        let crew_count = self
-            .mission_viewing_repository
-            .crew_counting(mission_id)
-            .await?;
-
-        let mission_status_condition = mission.status == MissionStatuses::Open.to_string()
-            || mission.status == MissionStatuses::Failed.to_string();
-        if !mission_status_condition {
+        if mission.status != MissionStatuses::Open.to_string() {
             return Err(anyhow::anyhow!("Mission is not joinable"));
         }
-        let crew_count_condition = crew_count < max_crew_per_mission;
-        if !crew_count_condition {
+
+        if mission.crew_count >= mission.max_crew as i64 {
             return Err(anyhow::anyhow!("Mission is full"));
         }
 
@@ -79,8 +67,7 @@ where
     pub async fn leave(&self, mission_id: i32, brawler_id: i32) -> Result<()> {
         let mission = self.mission_viewing_repository.get_one(mission_id).await?;
 
-        let leaving_condition = mission.status == MissionStatuses::Open.to_string()
-            || mission.status == MissionStatuses::Failed.to_string();
+        let leaving_condition = mission.status == MissionStatuses::Open.to_string();
         if !leaving_condition {
             return Err(anyhow::anyhow!("Mission is not leavable"));
         }

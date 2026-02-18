@@ -73,7 +73,19 @@ where
         )
             .into_response(),
 
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+        Err(e) => {
+            let status = if e.to_string().contains("can not join")
+                || e.to_string().contains("already joined")
+                || e.to_string().contains("not joinable")
+                || e.to_string().contains("is full")
+                || e.to_string().contains("not leavable")
+            {
+                StatusCode::BAD_REQUEST
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            };
+            (status, e.to_string()).into_response()
+        }
     }
 }
 

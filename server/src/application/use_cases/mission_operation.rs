@@ -41,12 +41,13 @@ where
             || mission.status == MissionStatuses::Failed.to_string();
 
         let max_crew_per_mission = std::env::var("MAX_CREW_PER_MISSION")
-            .expect("missing value")
-            .parse()?;
+            .unwrap_or_else(|_| "5".to_string())
+            .parse::<i32>()
+            .unwrap_or(5);
 
         let update_condition = is_status_open_or_fail
             && crew_count > 0
-            && crew_count < max_crew_per_mission
+            && crew_count < max_crew_per_mission.into()
             && mission.chief_id == chief_id;
         if !update_condition {
             return Err(anyhow::anyhow!("Invalid condition to change stages!"));

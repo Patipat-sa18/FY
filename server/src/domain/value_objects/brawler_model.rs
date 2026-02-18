@@ -18,6 +18,11 @@ pub struct UpdateUsernameModel {
     pub new_username: String,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct UpdateAvatarUrlModel {
+    pub url: String,
+}
+
 impl RegisterBrawlerModel {
     pub fn to_entity(&self) -> RegisterBrawlerEntity {
         RegisterBrawlerEntity {

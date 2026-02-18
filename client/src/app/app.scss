@@ -39,9 +39,125 @@ h6 {
     min-height: 100vh;
     width: 100%;
     box-sizing: border-box;
-    background: radial-gradient(circle at 50% 50%, #1e2328 0%, #0a1428 50%, #050a14 100%);
-    background-size: 200% 200%;
-    animation: pulseGradient 20s ease-in-out infinite;
+    background: radial-gradient(circle at 50% 0%, #102a43 0%, #05192d 40%, #000a14 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.abyss-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+}
+
+.light-rays {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    filter: blur(40px);
+}
+
+.ray {
+    width: 150px;
+    height: 150%;
+    background: linear-gradient(180deg, rgba(0, 210, 255, 0.15) 0%, rgba(0, 210, 255, 0) 70%);
+    transform: rotate(-15deg);
+    animation: rayFlicker 8s ease-in-out infinite alternate;
+
+    &:nth-child(2) {
+        animation-delay: -2s;
+        width: 200px;
+        transform: rotate(10deg);
+    }
+
+    &:nth-child(3) {
+        animation-delay: -4s;
+        width: 100px;
+        transform: rotate(-5deg);
+    }
+
+    &:nth-child(4) {
+        animation-delay: -6s;
+        width: 250px;
+        transform: rotate(20deg);
+    }
+}
+
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: particleFloat 15s linear infinite;
+
+    @for $i from 1 through 8 {
+        &:nth-child(#{$i}) {
+            width: (random(4) + 2) * 1px;
+            height: (random(4) + 2) * 1px;
+            left: random(100) * 1%;
+            top: random(100) * 1%;
+            animation-duration: (random(10) + 15) * 1s;
+            animation-delay: -(random(10)) * 1s;
+            opacity: calc(random(5) / 10 + 0.1);
+        }
+    }
+}
+
+.fish-tank {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.fish {
+    position: absolute;
+    width: 40px;
+    height: 18px;
+    background: rgba(0, 210, 255, 0.4);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    left: -100px;
+    filter: blur(1px);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-left: 15px solid rgba(0, 210, 255, 0.3);
+        border-radius: 3px;
+        animation: tailWag 0.5s ease-in-out infinite alternate;
+    }
+
+    @for $i from 1 through 5 {
+        &:nth-child(#{$i}) {
+            top: (random(80) + 10) * 1%;
+            transform: scale(calc(random(5) / 10 + 0.5));
+            animation: swim (random(10) + 15) * 1s linear infinite;
+            animation-delay: -(random(20)) * 1s;
+            opacity: calc(random(6) / 10 + 0.2);
+        }
+    }
 }
 
 .content {
@@ -50,6 +166,9 @@ h6 {
     margin: 0 auto;
     box-sizing: border-box;
     overflow-y: auto;
+    padding-top: 100px;
+    position: relative;
+    z-index: 1;
 }
 
 .page-container {
@@ -65,14 +184,60 @@ button {
     font-family: inherit;
 }
 
-@keyframes pulseGradient {
+@keyframes rayFlicker {
 
     0%,
     100% {
-        background-position: 0% 50%;
+        opacity: 0.3;
+        transform: translateX(0) rotate(-15deg) scaleX(1);
     }
 
     50% {
-        background-position: 100% 50%;
+        opacity: 0.6;
+        transform: translateX(20px) rotate(-12deg) scaleX(1.1);
+    }
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) translateX(0);
+    }
+
+    33% {
+        transform: translateY(-30vh) translateX(20px);
+    }
+
+    66% {
+        transform: translateY(-60vh) translateX(-20px);
+    }
+
+    100% {
+        transform: translateY(-100vh) translateX(0);
+    }
+}
+
+@keyframes swim {
+    0% {
+        left: -100px;
+        transform: scaleX(1) translateY(0);
+    }
+
+    50% {
+        transform: scaleX(1) translateY(-30px);
+    }
+
+    100% {
+        left: calc(100% + 100px);
+        transform: scaleX(1) translateY(0);
+    }
+}
+
+@keyframes tailWag {
+    0% {
+        transform: translateY(-50%) rotate(-15deg);
+    }
+
+    100% {
+        transform: translateY(-50%) rotate(15deg);
     }
 }

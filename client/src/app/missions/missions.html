@@ -24,6 +24,42 @@
     <div class="mission-list">
         @for (mission of missions$ | async; track mission.id) {
         <div class="mission-card">
+            @if (isEditing(mission.id)) {
+            <!-- Edit Mode -->
+            <div class="card-header editing">
+                <h3>Editing Mission</h3>
+                <div class="actions">
+                    <button class="primary" (click)="saveEdit()">
+                        <mat-icon>save</mat-icon> Save
+                    </button>
+                    <button class="secondary" (click)="cancelEdit()">
+                        <mat-icon>close</mat-icon> Cancel
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body form-grid">
+                <div class="form-group">
+                    <label>Mission Name</label>
+                    <input type="text" [(ngModel)]="editForm.name" placeholder="Enter name" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" [(ngModel)]="editForm.description" placeholder="Enter description" />
+                </div>
+
+                <div class="form-group">
+                    <label>Max Crew</label>
+                    <div class="crew-input">
+                        <input type="number" [(ngModel)]="editForm.max_crew" placeholder="Max" />
+                        <span>(Current: {{mission.crew_count}})</span>
+                    </div>
+                </div>
+            </div>
+
+            } @else {
+            <!-- View Mode -->
             <div class="card-header">
                 <h3>{{mission.name}}</h3>
                 <div class="badges">
@@ -56,14 +92,46 @@
                 </div>
             </div>
 
-            @if(isSignin() && mission.chief_id !== userId()){
+            @if(isSignin() && mission.chief_id !== userId() && mission.status === 'Open'){
             <div class="card-actions">
                 @if(isMember(mission.id)) {
-                <button class="warn" (click)="leave(mission.id)">Leave Mission</button>
+                <button class="warn" (click)="leave(mission.id)">
+                    <mat-icon>exit_to_app</mat-icon> Leave Mission
+                </button>
                 } @else {
-                <button class="primary" (click)="join(mission.id)">Join Mission</button>
-                }
+                @if(mission.crew_count < mission.max_crew) { <button class="primary" (click)="join(mission.id)">
+                    <mat-icon>person_add</mat-icon> Join Mission
+                    </button>
+                    } @else {
+                    <button class="secondary" disabled>
+                        <mat-icon>block</mat-icon> Mission Full
+                    </button>
+                    }
+                    }
             </div>
+            } @else if (isSignin() && mission.chief_id === userId()) {
+            <div class="card-actions">
+                @if(mission.status === 'Open') {
+                <button class="primary" (click)="start(mission.id)">
+                    <mat-icon>play_arrow</mat-icon> Start Mission
+                </button>
+                }
+                @if(mission.status === 'InProgress') {
+                <button class="primary" (click)="complete(mission.id)">
+                    <mat-icon>check_circle</mat-icon> Complete Mission
+                </button>
+                <button class="warn" (click)="fail(mission.id)">
+                    <mat-icon>error</mat-icon> Fail Mission
+                </button>
+                }
+                <button class="secondary" (click)="startEdit(mission)">
+                    <mat-icon>edit</mat-icon> Edit Mission
+                </button>
+                <button class="danger" (click)="deleteMission(mission.id)">
+                    <mat-icon>delete</mat-icon> Delete
+                </button>
+            </div>
+            }
             }
         </div>
         }
